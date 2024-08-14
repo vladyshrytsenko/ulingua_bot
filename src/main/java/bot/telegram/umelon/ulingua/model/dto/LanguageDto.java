@@ -60,5 +60,4 @@ public class LanguageDto {
             .map(LanguageDto::toEntity)
             .collect(Collectors.toList());
     }
-
 }

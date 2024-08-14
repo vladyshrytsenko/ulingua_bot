@@ -27,7 +27,7 @@ public class RegisterHandler implements CommandHandler {
         UserDto currentUserDto = userService.getByChatId(chatId);
         if (currentUserDto == null) {
             String text = "Виберіть вашу рідну мову:";
-            telegramUtils.sendLanguagesInlineKeyboard(chatId, text, CallbackCommandEnum.ADD_NATIVE_LANG.getValue());
+            telegramUtils.sendLanguagesInlineKeyboard(chatId, text, CallbackCommandEnum.ADD_NATIVE_LANG);
         } else {
             List<String> list = new ArrayList<>();
             currentUserDto.getLanguages().forEach(languageDto -> {

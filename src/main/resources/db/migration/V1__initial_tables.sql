@@ -19,20 +19,18 @@ CREATE TABLE IF NOT EXISTS languages (
 CREATE TABLE IF NOT EXISTS words (
     id SERIAL PRIMARY KEY,
     lang_id INTEGER REFERENCES languages(id),
-    original VARCHAR(64) NOT NULL,
-    part_of_speech VARCHAR(50),
-    gender VARCHAR(50),
-    tense VARCHAR(50) NOT NULL,
-    hieroglyphs VARCHAR(16),
-    transliteration VARCHAR(128)
+    original VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS user_words (
     user_id INTEGER REFERENCES users(id),
-    word_id INTEGER REFERENCES words(id)
+    word_id INTEGER REFERENCES words(id),
+    PRIMARY KEY (user_id, word_id),
+    usage_frequency INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS user_languages (
     user_id INTEGER REFERENCES users(id),
-    lang_id INTEGER REFERENCES languages(id)
+    lang_id INTEGER REFERENCES languages(id),
+    PRIMARY KEY (user_id, lang_id)
 );

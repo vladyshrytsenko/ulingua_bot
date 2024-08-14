@@ -7,6 +7,6 @@ public interface WordService {
 
     WordDto getById(long id);
 
-    WordDto save(Word word);
+    WordDto create(Word word);
 
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,16 @@ public class UserDto {
             .build();
     }
 
+    public static List<UserDto> toDtoList(List<User> users) {
+        if (users == null || users.isEmpty()) {
+            return List.of();
+        }
+
+        return users.stream()
+            .map(UserDto::toDto)
+            .collect(Collectors.toList());
+    }
+
     public static User toEntity(UserDto userDto) {
         if (userDto == null) {
             return null;
@@ -74,5 +85,15 @@ public class UserDto {
             .languages(languages)
             .createdAt(userDto.getCreatedAt())
             .build();
+    }
+
+    public static List<User> toEntityList(List<UserDto> userDtos) {
+        if (userDtos == null || userDtos.isEmpty()) {
+            return List.of();
+        }
+
+        return userDtos.stream()
+            .map(UserDto::toEntity)
+            .collect(Collectors.toList());
     }
 }
