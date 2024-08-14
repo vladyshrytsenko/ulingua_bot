@@ -7,6 +7,7 @@ import bot.telegram.umelon.ulingua.model.enums.UserState;
 public interface UserService {
 
     void setUserState(long chatId, UserState state);
+
     UserState getUserState(long chatId);
 
     UserDto getById(long id);
@@ -19,4 +20,5 @@ public interface UserService {
 
     UserDto setCurrentLanguageForUser(long chatId, String langCode);
 
+    void addWordForUser(long userId, long wordId);
 }

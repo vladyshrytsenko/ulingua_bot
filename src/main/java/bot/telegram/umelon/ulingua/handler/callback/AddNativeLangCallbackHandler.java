@@ -3,6 +3,7 @@ package bot.telegram.umelon.ulingua.handler.callback;
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.entity.User;
+import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.utils.CountryFlagUtil;
@@ -47,7 +48,7 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
             );
 
             userService.save(user);
-            telegramUtils.sendEditMessageTextWithInlineKeyboard(callbackChatId, callbackMessageId, text);
+            telegramUtils.sendEditMessageTextWithInlineKeyboard(callbackChatId, callbackMessageId, text, CallbackCommandEnum.ADD_LANG);
         }
     }
 }

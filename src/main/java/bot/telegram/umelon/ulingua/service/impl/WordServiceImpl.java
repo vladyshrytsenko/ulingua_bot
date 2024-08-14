@@ -1,13 +1,12 @@
 package bot.telegram.umelon.ulingua.service.impl;
 
-import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
-import bot.telegram.umelon.ulingua.model.entity.User;
 import bot.telegram.umelon.ulingua.model.entity.Word;
 import bot.telegram.umelon.ulingua.repository.WordRepository;
 import bot.telegram.umelon.ulingua.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -24,41 +23,26 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public WordDto save(Word word) {
-//        Optional<Word> existingWordOpt = wordRepository.findByChatId(user.getChatId());
-//        Word savedWord;
-//
-//        if (existingWordOpt.isPresent()) {
-//            Word existingWord = existingWordOpt.get();
-//
-//            if (word.getGender() != null) {
-//                existingWord.setGender(word.getGender());
-//            }
-//            if (word.getHieroglyphs() != null) {
-//                existingWord.setHieroglyphs(word.getHieroglyphs());
-//            }
-//            if (word.getOriginal() != null) {
-//                existingWord.setOriginal(word.getOriginal());
-//            }
-//            if (word.getLanguage() != null) {
-//                existingWord.setLanguage(word.getLanguage());
-//            }
-//            if (word.getTense() != null) {
-//                existingWord.setTense(word.getTense());
-//            }
-//            if (word.getTransliteration() != null) {
-//                existingWord.setTransliteration(word.getTransliteration());
-//            }
-//            if (word.getPartOfSpeech() != null) {
-//                existingWord.setPartOfSpeech(word.getPartOfSpeech());
-//            }
-//
-//            savedWord = wordRepository.save(existingWord);
-//        } else {
-//            savedWord = wordRepository.save(word);
-//        }
-//
-//        return WordDto.toDto(savedWord);
-        return null;
+    @Transactional
+    public WordDto create(Word word) {
+        Optional<Word> existingWordOptional = wordRepository.findByOriginal(word.getOriginal());
+        Word savedWord;
+
+        if (existingWordOptional.isPresent()) {
+            Word existingWord = existingWordOptional.get();
+            existingWord.setOriginal(word.getOriginal());
+
+            savedWord = wordRepository.save(existingWord);
+
+        } else {
+            Word newWord = Word.builder()
+                .original(word.getOriginal())
+                .language(word.getLanguage())
+                .build();
+
+            savedWord = wordRepository.save(newWord);
+        }
+
+        return WordDto.toDto(savedWord);
     }
 }

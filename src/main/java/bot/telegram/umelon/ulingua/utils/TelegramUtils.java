@@ -70,7 +70,7 @@ public class TelegramUtils {
         }
     }
 
-    public void sendEditMessageTextWithInlineKeyboard(long chatId, long messageId, String text) {
+    public void sendEditMessageTextWithInlineKeyboard(long chatId, long messageId, String text, CallbackCommandEnum command) {
         EditMessageText message = new EditMessageText();
         message.setChatId(String.valueOf(chatId));
         message.setText(text);
@@ -85,10 +85,16 @@ public class TelegramUtils {
 
         int count = 0;
 
-        UserDto byChatId = userService.getByChatId(chatId);
-        String nativeLang = byChatId.getNativeLang();
+        UserDto currentUser = userService.getByChatId(chatId);
 
-        languages.removeIf(languageDto -> languageDto.getCountryCode().equals(nativeLang));
+        if (currentUser != null) {
+            languages.removeIf(
+                languageDto -> currentUser.getLanguages().stream()
+                                   .anyMatch(lang -> lang.getCountryCode().equals(languageDto.getCountryCode())) ||
+                               currentUser.getNativeLang().equals(languageDto.getCountryCode())
+            );
+        }
+
         for (LanguageDto lang : languages) {
             if (count % buttonsPerRow == 0 && !row.isEmpty()) {
                 keyboard.add(row);
@@ -97,7 +103,7 @@ public class TelegramUtils {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(lang.getUnicode());
 
-            String callbackData = lang.getCountryCode().concat(CallbackCommandEnum.ADD_LANG.getValue());
+            String callbackData = lang.getCountryCode().concat(command.getValue());
             button.setCallbackData(callbackData);
             row.add(button);
             count++;
@@ -117,7 +123,7 @@ public class TelegramUtils {
     }
 
 
-    public void sendLanguagesInlineKeyboard(Long chatId, String text, String command) {
+    public void sendLanguagesInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);
@@ -130,6 +136,15 @@ public class TelegramUtils {
         int buttonsPerRow = 3;
         List<InlineKeyboardButton> row = new ArrayList<>();
 
+        UserDto currentUser = userService.getByChatId(chatId);
+        if (currentUser != null) {
+            languages.removeIf(
+                languageDto -> currentUser.getLanguages().stream()
+                                   .anyMatch(lang -> lang.getCountryCode().equals(languageDto.getCountryCode())) ||
+                               currentUser.getNativeLang().equals(languageDto.getCountryCode())
+            );
+        }
+
         int count = 0;
         for (LanguageDto lang : languages) {
             if (count % buttonsPerRow == 0 && !row.isEmpty()) {
@@ -139,7 +154,7 @@ public class TelegramUtils {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(lang.getUnicode());
 
-            String callbackData = lang.getCountryCode().concat(command);
+            String callbackData = lang.getCountryCode().concat(command.getValue());
             button.setCallbackData(callbackData);
             row.add(button);
             count++;
@@ -150,6 +165,74 @@ public class TelegramUtils {
 
         inlineKeyboardMarkup.setKeyboard(keyboard);
         message.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            bot.execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendUserLanguagesInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        int buttonsPerRow = 3;
+        List<InlineKeyboardButton> row = new ArrayList<>();
+
+        UserDto currentUser = userService.getByChatId(chatId);
+
+        int count = 0;
+        for (LanguageDto lang : currentUser.getLanguages()) {
+            if (count % buttonsPerRow == 0 && !row.isEmpty()) {
+                keyboard.add(row);
+                row = new ArrayList<>();
+            }
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(lang.getUnicode());
+
+            String callbackData = lang.getCountryCode().concat(command.getValue());
+            button.setCallbackData(callbackData);
+            row.add(button);
+            count++;
+        }
+        if (!row.isEmpty()) {
+            keyboard.add(row);
+        }
+
+        inlineKeyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            bot.execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
+
+        SendMessage message = new SendMessage();
+        message.setChatId(String.valueOf(chatId));
+        message.setText(text);
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var setCurrentLangButton = new InlineKeyboardButton();
+
+        setCurrentLangButton.setText("Змінити мову,що вивчається");
+        setCurrentLangButton.setCallbackData(command.getValue());
+
+        rowInLine.add(setCurrentLangButton);
+        rowsInLine.add(rowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+        message.setReplyMarkup(markupInLine);
 
         try {
             bot.execute(message);

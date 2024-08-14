@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity(name = "words")
 @Data
@@ -33,22 +33,7 @@ public class Word {
     @Column(name = "original", nullable = false, length = 64)
     private String original;
 
-    @Column(name = "part_of_speech", length = 50)
-    private String partOfSpeech;
-
-    @Column(name = "gender", length = 50)
-    private String gender;
-
-    @Column(name = "tense", nullable = false, length = 50)
-    private String tense;
-
-    @Column(name = "hieroglyphs", length = 16)
-    private String hieroglyphs;
-
-    @Column(name = "transliteration", length = 128)
-    private String transliteration;
-
     @ManyToMany(mappedBy = "words")
-    private Set<User> users;
+    private List<User> users;
 
 }

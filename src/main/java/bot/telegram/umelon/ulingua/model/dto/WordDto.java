@@ -13,7 +13,7 @@ import java.util.List;
 public class WordDto {
 
     private Long id;
-    private Long languageId;
+    private LanguageDto language;
     private String original;
     private String partOfSpeech;
     private String gender;
@@ -25,30 +25,28 @@ public class WordDto {
     public static WordDto toDto(Word word) {
         return WordDto.builder()
             .id(word.getId())
-            .languageId(word.getLanguage().getId())
+            .language(LanguageDto.toDto(word.getLanguage()))
             .original(word.getOriginal())
-            .partOfSpeech(word.getPartOfSpeech())
-            .gender(word.getGender())
-            .tense(word.getTense())
-            .hieroglyphs(word.getHieroglyphs())
-            .transliteration(word.getTransliteration())
-//            .users(word.getUsers().stream()
-//                .map(UserMapper::toDto) // Assuming you have a UserMapper with a toDto method
-//                .collect(Collectors.toList()))
+//            .partOfSpeech(word.getPartOfSpeech())
+//            .gender(word.getGender())
+//            .tense(word.getTense())
+//            .hieroglyphs(word.getHieroglyphs())
+//            .transliteration(word.getTransliteration())
+            .users(UserDto.toDtoList(word.getUsers()))
             .build();
     }
 
-    public static Word toEntity(WordDto wordDto) {
+    public Word toEntity(WordDto wordDto) {
         return Word.builder()
             .id(wordDto.getId())
-//            .language(language)
+            .language(LanguageDto.toEntity(wordDto.getLanguage()))
             .original(wordDto.getOriginal())
-            .partOfSpeech(wordDto.getPartOfSpeech())
-            .gender(wordDto.getGender())
-            .tense(wordDto.getTense())
-            .hieroglyphs(wordDto.getHieroglyphs())
-            .transliteration(wordDto.getTransliteration())
-//            .users(users)
+//            .partOfSpeech(wordDto.getPartOfSpeech())
+//            .gender(wordDto.getGender())
+//            .tense(wordDto.getTense())
+//            .hieroglyphs(wordDto.getHieroglyphs())
+//            .transliteration(wordDto.getTransliteration())
+            .users(UserDto.toEntityList(users))
             .build();
     }
 }

@@ -4,8 +4,11 @@ import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.entity.Language;
 import bot.telegram.umelon.ulingua.model.entity.User;
+import bot.telegram.umelon.ulingua.model.entity.UserWord;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
+import bot.telegram.umelon.ulingua.repository.UserWordRepository;
 import bot.telegram.umelon.ulingua.service.LanguageService;
+import bot.telegram.umelon.ulingua.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final LanguageService languageService;
+    private final UserWordRepository userWordRepository;
+    private final WordService wordService;
 
     private Map<Long, UserState> userStateMap = new HashMap<>();
 
@@ -108,4 +113,17 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    @Transactional
+    public void addWordForUser(long userId, long wordId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserWord userWord = UserWord.builder()
+            .userId(userId)
+            .wordId(wordId)
+            .build();
+
+        userWordRepository.save(userWord);
+    }
 }

@@ -3,6 +3,7 @@ package bot.telegram.umelon.ulingua.handler.command;
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
+import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.utils.TelegramUtils;
@@ -41,7 +42,12 @@ public class ProfileHandler implements CommandHandler {
 
                 Список мов на вивченні: %s
                 """, currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
-            telegramUtils.sendMessage(chatId, userInfo);
+
+            if (currentUserDto.getLanguages().size() > 1) {
+                telegramUtils.sendInlineKeyboard(chatId, userInfo, CallbackCommandEnum.SET_CURRENT_LANG);
+            } else {
+                telegramUtils.sendMessage(chatId, userInfo);
+            }
         }
     }
 }
