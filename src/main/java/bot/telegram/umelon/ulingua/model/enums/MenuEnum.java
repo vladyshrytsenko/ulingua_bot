@@ -5,7 +5,6 @@ import lombok.Getter;
 @Getter
 public enum MenuEnum {
 
-    START("/start"),
     REGISTER("/register"),
     PROFILE("/profile"),
     ADD_LANG("/add_lang"),

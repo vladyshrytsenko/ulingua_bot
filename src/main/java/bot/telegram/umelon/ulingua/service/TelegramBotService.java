@@ -44,9 +44,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
     public void initBotCommands() {
 
         List<BotCommand> botCommandList = new ArrayList<>();
-        botCommandList.add(new BotCommand("/start", "опис функціоналу"));
         botCommandList.add(new BotCommand("/profile", "профіль користувача"));
-        botCommandList.add(new BotCommand("/add_lang", "додати мову на вивчення"));
         botCommandList.add(new BotCommand("/new_word", "додати нове слово на вивчення"));
 
         try {

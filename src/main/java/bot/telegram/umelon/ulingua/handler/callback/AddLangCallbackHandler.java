@@ -3,6 +3,7 @@ package bot.telegram.umelon.ulingua.handler.callback;
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.entity.User;
+import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.utils.CountryFlagUtil;
@@ -27,23 +28,19 @@ public class AddLangCallbackHandler implements CallbackHandler {
         Long callbackChatId = callbackQuery.getMessage().getChatId();
         Integer callbackMessageId = callbackQuery.getMessage().getMessageId();
 
-        String selectedLanguageFlag = countryFlagUtil.getFlagByCountry(callbackData.substring(0, 2));
+        if (callbackData.equals(CallbackCommandEnum.ADD_LANG.getValue())) {
+            telegramUtils.sendLanguagesInlineKeyboard(callbackChatId, "Яку мову додати?", CallbackCommandEnum.ADD_LANG);
 
-        LanguageDto foundLanguage = languageService.getByCountryCode(callbackData.substring(0, 2));
-        if (foundLanguage != null) {
+        } else if (callbackData.endsWith(CallbackCommandEnum.ADD_LANG.getValue())) {
+            String selectedLanguageFlag = countryFlagUtil.getFlagByCountry(callbackData.substring(0, 2));
 
-//            org.telegram.telegrambots.meta.api.objects.User from = callbackQuery.getFrom();
-//            User user = User.builder()
-//                .chatId(callbackChatId)
-//                .firstName(from.getFirstName())
-//                .lastName(from.getLastName())
-//                .username(from.getUserName())
-//                .build();
+            LanguageDto foundLanguage = languageService.getByCountryCode(callbackData.substring(0, 2));
+            if (foundLanguage != null) {
+                userService.addUserLanguage(callbackChatId, foundLanguage.getId());
 
-            userService.addUserLanguage(callbackChatId, foundLanguage.getId());
-
-            String text = String.format("Ви обрали мову для вивчення: %s.", selectedLanguageFlag);
-            telegramUtils.sendEditMessageText(callbackChatId, callbackMessageId, text);
+                String text = String.format("Ви обрали мову для вивчення: %s.", selectedLanguageFlag);
+                telegramUtils.sendEditMessageText(callbackChatId, callbackMessageId, text);
+            }
         }
     }
 }
