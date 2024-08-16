@@ -1,5 +1,6 @@
 package bot.telegram.umelon.ulingua.utils;
 
+import bot.telegram.umelon.ulingua.model.ButtonData;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
@@ -16,7 +17,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.containsAny;
 
@@ -175,7 +178,7 @@ public class TelegramUtils {
 
     public void sendUserLanguagesInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
         SendMessage message = new SendMessage();
-        message.setChatId(chatId);
+        message.setChatId(String.valueOf(chatId));
         message.setText(text);
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -189,14 +192,12 @@ public class TelegramUtils {
         int count = 0;
         for (LanguageDto lang : currentUser.getLanguages()) {
             if (count % buttonsPerRow == 0 && !row.isEmpty()) {
-                keyboard.add(row);
-                row = new ArrayList<>();
+                keyboard.add(new ArrayList<>(row));
+                row.clear();
             }
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(lang.getUnicode());
-
-            String callbackData = lang.getCountryCode().concat(command.getValue());
-            button.setCallbackData(callbackData);
+            button.setCallbackData(lang.getCountryCode().concat(command.getValue()));
             row.add(button);
             count++;
         }
@@ -214,22 +215,22 @@ public class TelegramUtils {
         }
     }
 
-    public void sendInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
-
+    public void sendInlineKeyboard(Long chatId, String text, List<ButtonData> buttonDataList) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(text);
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
-        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
-        var setCurrentLangButton = new InlineKeyboardButton();
+        Map<Integer, List<InlineKeyboardButton>> rowsMap = new HashMap<>();
 
-        setCurrentLangButton.setText("Змінити мову,що вивчається");
-        setCurrentLangButton.setCallbackData(command.getValue());
+        for (ButtonData buttonData : buttonDataList) {
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(buttonData.getText());
+            button.setCallbackData(buttonData.getCallbackCommand().getValue());
+            rowsMap.computeIfAbsent(buttonData.getRowNumber(), k -> new ArrayList<>()).add(button);
+        }
 
-        rowInLine.add(setCurrentLangButton);
-        rowsInLine.add(rowInLine);
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>(rowsMap.values());
 
         markupInLine.setKeyboard(rowsInLine);
         message.setReplyMarkup(markupInLine);

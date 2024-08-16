@@ -2,7 +2,6 @@ package bot.telegram.umelon.ulingua.service.impl;
 
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
-import bot.telegram.umelon.ulingua.model.entity.Language;
 import bot.telegram.umelon.ulingua.model.entity.User;
 import bot.telegram.umelon.ulingua.model.entity.UserWord;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
@@ -15,9 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import bot.telegram.umelon.ulingua.repository.UserRepository;
 import bot.telegram.umelon.ulingua.service.UserService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -85,19 +87,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto addLanguageToUser(long chatId, long languageId) {
-        Optional<User> userOptional = userRepository.findByChatId(chatId);
-        if (userOptional.isPresent()) {
-            bot.telegram.umelon.ulingua.model.entity.User user = userOptional.get();
+    public UserDto addUserLanguage(long chatId, long languageId) {
+        LanguageDto foundLanguageDto = languageService.getById(languageId);
 
-            LanguageDto foundLanguageDto = languageService.getById(languageId);
-            Language foundLanguageEntity = LanguageDto.toEntity(foundLanguageDto);
-
-            user.getLanguages().add(foundLanguageEntity);
-            User updated = userRepository.save(user);
-            return UserDto.toDto(updated);
+        UserDto currentUser = getByChatId(chatId);
+        if (currentUser.getLanguages() == null) {
+            currentUser.setLanguages(new HashSet<>());
         }
-        return null;
+        currentUser.getLanguages().add(foundLanguageDto);
+        currentUser.setCurrentLang(foundLanguageDto.getCountryCode());
+
+        User currentUserEntity = UserDto.toEntity(currentUser);
+        return save(currentUserEntity);
+    }
+
+    @Override
+    @Transactional
+    public UserDto removeUserLanguage(long chatId, long languageId) {
+        LanguageDto foundLanguageDto = languageService.getById(languageId);
+
+        UserDto currentUser = getByChatId(chatId);
+        currentUser.getLanguages().remove(foundLanguageDto);
+
+        if (foundLanguageDto.getCountryCode().equals(currentUser.getCurrentLang())) {
+            Set<LanguageDto> userLanguages = currentUser.getLanguages();
+            LanguageDto lastUserLanguage = new ArrayList<>(userLanguages).get(userLanguages.size() - 1);
+            currentUser.setCurrentLang(lastUserLanguage.getCountryCode());
+        }
+
+        User currentUserEntity = UserDto.toEntity(currentUser);
+        return save(currentUserEntity);
     }
 
     @Override

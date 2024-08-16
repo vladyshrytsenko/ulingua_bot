@@ -1,6 +1,7 @@
 package bot.telegram.umelon.ulingua.handler.command;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
+import bot.telegram.umelon.ulingua.model.ButtonData;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
@@ -44,7 +45,11 @@ public class ProfileHandler implements CommandHandler {
                 """, currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
 
             if (currentUserDto.getLanguages().size() > 1) {
-                telegramUtils.sendInlineKeyboard(chatId, userInfo, CallbackCommandEnum.SET_CURRENT_LANG);
+                List<ButtonData> buttons = List.of(
+                    new ButtonData("Змінити мову", CallbackCommandEnum.SET_CURRENT_LANG, 1),
+                    new ButtonData("Видалити мову", CallbackCommandEnum.REMOVE_LANG, 1)
+                );
+                telegramUtils.sendInlineKeyboard(chatId, userInfo, buttons);
             } else {
                 telegramUtils.sendMessage(chatId, userInfo);
             }

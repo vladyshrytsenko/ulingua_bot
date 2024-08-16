@@ -53,4 +53,13 @@ public class LanguageServiceImpl implements LanguageService {
         return languageOptional.map(LanguageDto::toDto).orElse(null);
     }
 
+    @Override
+    public void deleteById(long id) {
+        if (languageRepository.existsById(id)) {
+            languageRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Language not found");
+        }
+    }
+
 }

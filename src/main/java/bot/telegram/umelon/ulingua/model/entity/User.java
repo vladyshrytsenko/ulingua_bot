@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "users")
@@ -54,7 +55,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "word_id")
     )
-    private Set<Word> words;
+    private Set<Word> words = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -62,7 +63,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "lang_id")
     )
-    private Set<Language> languages;
+    private Set<Language> languages = new HashSet<>();
 
     @Temporal(TemporalType.DATE)
     @Column(name = "created_at", nullable = false, updatable = false)
