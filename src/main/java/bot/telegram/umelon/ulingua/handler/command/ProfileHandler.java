@@ -44,15 +44,25 @@ public class ProfileHandler implements CommandHandler {
                 Список мов на вивченні: %s
                 """, currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
 
-            if (currentUserDto.getLanguages().size() > 1) {
-                List<ButtonData> buttons = List.of(
-                    new ButtonData("Змінити мову", CallbackCommandEnum.SET_CURRENT_LANG, 1),
-                    new ButtonData("Видалити мову", CallbackCommandEnum.REMOVE_LANG, 1)
-                );
-                telegramUtils.sendInlineKeyboard(chatId, userInfo, buttons);
-            } else {
-                telegramUtils.sendMessage(chatId, userInfo);
-            }
+            List<ButtonData> buttons = getButtonDataList(currentUserDto);
+            telegramUtils.sendInlineKeyboard(chatId, userInfo, buttons);
         }
+    }
+
+    private List<ButtonData> getButtonDataList(UserDto currentUserDto) {
+
+        List<ButtonData> buttons;
+        if (currentUserDto.getLanguages().size() > 1) {
+            buttons = List.of(
+                new ButtonData("➕ Додати мову", CallbackCommandEnum.ADD_LANG, 1),
+                new ButtonData("✏️ Змінити мову", CallbackCommandEnum.SET_CURRENT_LANG, 1),
+                new ButtonData("❌ Видалити мову", CallbackCommandEnum.REMOVE_LANG, 2)
+            );
+        } else {
+            buttons = List.of(
+                new ButtonData("➕ Додати мову", CallbackCommandEnum.ADD_LANG, 1)
+            );
+        }
+        return buttons;
     }
 }
