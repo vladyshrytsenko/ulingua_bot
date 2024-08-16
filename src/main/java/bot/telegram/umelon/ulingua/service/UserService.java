@@ -16,7 +16,9 @@ public interface UserService {
 
     UserDto save(User user);
 
-    UserDto addLanguageToUser(long chatId, long languageId);
+    UserDto addUserLanguage(long chatId, long languageId);
+
+    UserDto removeUserLanguage(long chatId, long languageId);
 
     UserDto setCurrentLanguageForUser(long chatId, String langCode);
 

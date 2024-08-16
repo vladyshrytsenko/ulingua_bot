@@ -14,4 +14,6 @@ public interface LanguageService {
 
     LanguageDto getByCountryCode(String code);
 
+    void deleteById(long id);
+
 }
