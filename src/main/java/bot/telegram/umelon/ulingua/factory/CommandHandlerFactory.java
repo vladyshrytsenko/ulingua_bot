@@ -16,7 +16,6 @@ public class CommandHandlerFactory {
 
     private final ObjectFactory<RegisterHandler> registerHandlerObjectFactory;
     private final ObjectFactory<ProfileHandler> profileHandlerObjectFactory;
-//    private final ObjectFactory<AddLangHandler> addLangHandlerObjectFactory;
     private final ObjectFactory<NewWordHandler> newWordHandlerObjectFactory;
 
     private final ObjectFactory<OpenAIHandler> openAIHandlerObjectFactory;
@@ -26,7 +25,6 @@ public class CommandHandlerFactory {
         return switch (menuEnum) {
             case REGISTER -> registerHandlerObjectFactory.getObject();
             case PROFILE -> profileHandlerObjectFactory.getObject();
-//            case ADD_LANG -> addLangHandlerObjectFactory.getObject();
             case NEW_WORD -> newWordHandlerObjectFactory.getObject();
 
             //            default -> throw new IllegalArgumentException("Unknown command: " + menuEnum);
