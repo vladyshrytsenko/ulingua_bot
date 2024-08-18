@@ -2,6 +2,7 @@ package bot.telegram.umelon.ulingua.handler.command;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.model.ButtonData;
+import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
@@ -24,11 +25,11 @@ public class ProfileHandler implements CommandHandler {
     private final TelegramUtils telegramUtils;
 
     @Override
-    public void handle(long chatId, String messageText, Update update) {
+    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
 
         UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
         if (currentUserDto == null) {
-            String message = "Ви ще не зареєстровані в боті. Натисніть /register для початку роботи.";
+            String message = localMessages.get("message.register_required");
             telegramUtils.sendMessage(chatId, message);
         } else {
             LanguageDto nativeLang = languageService.getByCountryCode(currentUserDto.getNativeLang());
@@ -36,31 +37,24 @@ public class ProfileHandler implements CommandHandler {
             List<String> list = new ArrayList<>();
             currentUserDto.getLanguages().forEach(languageDto -> list.add(languageDto.getUnicode()));
 
-            String userInfo = String.format("""
-                Дата реєстрації: %s
-                Рідна мова: %s
-                Поточна мова для вивчення: %s
+            String userInfo = String.format(localMessages.get("user.info"), currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
 
-                Список мов на вивченні: %s
-                """, currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
-
-            List<ButtonData> buttons = getButtonDataList(currentUserDto);
+            List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
             telegramUtils.sendInlineKeyboard(chatId, userInfo, buttons);
         }
     }
 
-    private List<ButtonData> getButtonDataList(UserDto currentUserDto) {
-
+    private List<ButtonData> getButtonDataList(UserDto currentUserDto, LocalMessages localMessages) {
         List<ButtonData> buttons;
         if (currentUserDto.getLanguages().size() > 1) {
             buttons = List.of(
-                new ButtonData("➕ Додати мову", CallbackCommandEnum.ADD_LANG, 1),
-                new ButtonData("✏️ Змінити мову", CallbackCommandEnum.SET_CURRENT_LANG, 1),
-                new ButtonData("❌ Видалити мову", CallbackCommandEnum.REMOVE_LANG, 2)
+                new ButtonData(localMessages.get("button.add_language"), CallbackCommandEnum.ADD_LANG, 1),
+                new ButtonData(localMessages.get("button.change_current_language"), CallbackCommandEnum.SET_CURRENT_LANG, 1),
+                new ButtonData(localMessages.get("button.remove_language"), CallbackCommandEnum.REMOVE_LANG, 2)
             );
         } else {
             buttons = List.of(
-                new ButtonData("➕ Додати мову", CallbackCommandEnum.ADD_LANG, 1)
+                new ButtonData(localMessages.get("button.add_language"), CallbackCommandEnum.ADD_LANG, 1)
             );
         }
         return buttons;

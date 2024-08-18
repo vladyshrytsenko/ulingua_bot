@@ -1,6 +1,7 @@
 package bot.telegram.umelon.ulingua.handler.command;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
+import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.service.UserService;
@@ -17,16 +18,16 @@ public class NewWordHandler implements CommandHandler {
     private final TelegramUtils telegramUtils;
 
     @Override
-    public void handle(long chatId, String messageText, Update update) {
+    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
 
         String message;
         UserDto currentUserDto = this.userService.getByChatId(update.getMessage().getChat().getId());
 
         if (currentUserDto == null) {
-            message = "Ви ще не зареєстровані в боті. Натисніть /register для початку роботи.";
+            message = localMessages.get("message.register_required");
             telegramUtils.sendMessage(chatId, message);
         } else {
-            message = "Введіть нове слово на мові, що вивчається (у будь-якому роді, часі, відмінку):";
+            message = localMessages.get("message.enter_new_word");
             userService.setUserState(chatId, UserState.AWAITING_NEW_WORD);
             telegramUtils.sendMessage(chatId, message);
         }

@@ -1,6 +1,7 @@
 package bot.telegram.umelon.ulingua.handler.callback;
 
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
+import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
@@ -21,14 +22,14 @@ public class RemoveLangCallbackHandler implements CallbackHandler {
     private final TelegramUtils telegramUtils;
 
     @Override
-    public void handle(CallbackQuery callbackQuery) {
+    public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
 
         String callbackData = callbackQuery.getData();
         Long callbackChatId = callbackQuery.getMessage().getChatId();
         Integer callbackMessageId = callbackQuery.getMessage().getMessageId();
 
         if (callbackData.equals(CallbackCommandEnum.REMOVE_LANG.getValue())) {
-            telegramUtils.sendUserLanguagesInlineKeyboard(callbackChatId, "Виберiть мову для видалення:", CallbackCommandEnum.REMOVE_LANG);
+            telegramUtils.sendUserLanguagesInlineKeyboard(callbackChatId, localMessages.get("message.choose_language_to_delete"), CallbackCommandEnum.REMOVE_LANG);
 
         } else if (callbackData.endsWith(CallbackCommandEnum.REMOVE_LANG.getValue())) {
             String selectedLanguageFlag = countryFlagUtil.getFlagByCountry(callbackData.substring(0, 2));
@@ -37,7 +38,7 @@ public class RemoveLangCallbackHandler implements CallbackHandler {
             if (foundLanguage != null) {
                 userService.removeUserLanguage(callbackChatId, foundLanguage.getId());
 
-                String text = String.format("Ви видалили мову зі списку: %s.", selectedLanguageFlag);
+                String text = String.format(localMessages.get("message.language_removed"), selectedLanguageFlag);
                 telegramUtils.sendEditMessageText(callbackChatId, callbackMessageId, text);
             }
         }

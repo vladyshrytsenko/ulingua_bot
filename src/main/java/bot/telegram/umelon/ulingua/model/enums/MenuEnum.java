@@ -9,7 +9,8 @@ public enum MenuEnum {
     PROFILE("/profile"),
     ADD_LANG("/add_lang"),
     NEW_WORD("/new_word"),
-    CUSTOM("привет");
+    LOCALIZATION("/localization"),
+    CUSTOM("custom");
 
     private final String value;
 

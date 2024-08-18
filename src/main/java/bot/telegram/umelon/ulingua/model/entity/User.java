@@ -49,6 +49,9 @@ public class User {
     @Column(name = "current_lang")
     private String currentLang;
 
+    @Column(name = "localization")
+    private String localization;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_words",

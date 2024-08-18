@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.containsAny;
 
@@ -188,9 +189,14 @@ public class TelegramUtils {
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         UserDto currentUser = userService.getByChatId(chatId);
+        Set<LanguageDto> userLanguages = currentUser.getLanguages();
+        if (command.equals(CallbackCommandEnum.CHANGE_BOT_LANG)) {
+            LanguageDto byCountryCode = languageService.getByCountryCode(currentUser.getNativeLang());
+            userLanguages.add(byCountryCode);
+        }
 
         int count = 0;
-        for (LanguageDto lang : currentUser.getLanguages()) {
+        for (LanguageDto lang : userLanguages) {
             if (count % buttonsPerRow == 0 && !row.isEmpty()) {
                 keyboard.add(new ArrayList<>(row));
                 row.clear();

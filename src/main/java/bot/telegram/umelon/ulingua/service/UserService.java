@@ -20,7 +20,9 @@ public interface UserService {
 
     UserDto removeUserLanguage(long chatId, long languageId);
 
-    UserDto setCurrentLanguageForUser(long chatId, String langCode);
+    UserDto setUserCurrentLanguage(long chatId, String langCode);
+
+    UserDto setBotLanguage(long chatId, String langCode);
 
     void addWordForUser(long userId, long wordId);
 }

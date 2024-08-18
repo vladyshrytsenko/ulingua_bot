@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 @Component
 @RequiredArgsConstructor
-public class SetCurrentLangCallbackHandler implements CallbackHandler {
+public class LocalizationCallbackHandler implements CallbackHandler {
 
     private final UserService userService;
     private final TelegramUtils telegramUtils;
@@ -23,17 +23,12 @@ public class SetCurrentLangCallbackHandler implements CallbackHandler {
         Long callbackChatId = callbackQuery.getMessage().getChatId();
         Integer callbackMessageId = callbackQuery.getMessage().getMessageId();
 
-        if (callbackData.equals(CallbackCommandEnum.SET_CURRENT_LANG.getValue())) {
-            telegramUtils.sendUserLanguagesInlineKeyboard(
-                callbackChatId, localMessages.get("message.select_new_current_language"), CallbackCommandEnum.SET_CURRENT_LANG
-            );
-
-        } else if (callbackData.endsWith(CallbackCommandEnum.SET_CURRENT_LANG.getValue())) {
-            String selectedLang = callbackData.replace(CallbackCommandEnum.SET_CURRENT_LANG.getValue(), "");
-            userService.setUserCurrentLanguage(callbackChatId, selectedLang);
+        if (callbackData.endsWith(CallbackCommandEnum.CHANGE_BOT_LANG.getValue())) {
+            String selectedLang = callbackData.replace(CallbackCommandEnum.CHANGE_BOT_LANG.getValue(), "");
+            userService.setBotLanguage(callbackChatId, selectedLang);
 
             telegramUtils.sendEditMessageText(
-                callbackChatId, callbackMessageId, localMessages.get("message.current_language_changed")
+                callbackChatId, callbackMessageId, localMessages.get("message.bot_language_changed")
             );
         }
     }

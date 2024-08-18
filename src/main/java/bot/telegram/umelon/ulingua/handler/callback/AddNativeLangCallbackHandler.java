@@ -1,6 +1,7 @@
 package bot.telegram.umelon.ulingua.handler.callback;
 
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
+import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.entity.User;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
@@ -22,7 +23,7 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
     private final TelegramUtils telegramUtils;
 
     @Override
-    public void handle(CallbackQuery callbackQuery) {
+    public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
 
         String callbackData = callbackQuery.getData();
         Long callbackChatId = callbackQuery.getMessage().getChatId();
@@ -40,15 +41,18 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
                 .lastName(from.getLastName())
                 .username(from.getUserName())
                 .nativeLang(foundLanguage.getCountryCode())
+                .localization(foundLanguage.getCountryCode())
                 .build();
 
             String text = String.format(
-                "Ви встановили рідну мову: %s. Виберiть мову для вивчення: ",
+                localMessages.get("message.native_language_selected"),
                 selectedNativeLanguageFlag
             );
 
             userService.save(user);
-            telegramUtils.sendEditMessageTextWithInlineKeyboard(callbackChatId, callbackMessageId, text, CallbackCommandEnum.ADD_LANG);
+            telegramUtils.sendEditMessageTextWithInlineKeyboard(
+                callbackChatId, callbackMessageId, text, CallbackCommandEnum.ADD_LANG
+            );
         }
     }
 }

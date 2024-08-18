@@ -8,7 +8,8 @@ public enum CallbackCommandEnum {
     ADD_LANG("_add_lang"),
     REMOVE_LANG("_remove_lang"),
     ADD_NATIVE_LANG("_add_native_lang"),
-    SET_CURRENT_LANG("_set_current_lang");
+    SET_CURRENT_LANG("_set_current_lang"),
+    CHANGE_BOT_LANG("_change_bot_lang");
 
     private final String value;
 

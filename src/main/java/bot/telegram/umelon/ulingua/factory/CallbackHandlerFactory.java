@@ -3,6 +3,7 @@ package bot.telegram.umelon.ulingua.factory;
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.AddLangCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.AddNativeLangCallbackHandler;
+import bot.telegram.umelon.ulingua.handler.callback.LocalizationCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.RemoveLangCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.SetCurrentLangCallbackHandler;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
@@ -18,6 +19,7 @@ public class CallbackHandlerFactory {
     private final ObjectFactory<AddLangCallbackHandler> addLangHandlerObjectFactory;
     private final ObjectFactory<RemoveLangCallbackHandler> removeLangHandlerObjectFactory;
     private final ObjectFactory<SetCurrentLangCallbackHandler> setCurrentLangHandlerObjectFactory;
+    private final ObjectFactory<LocalizationCallbackHandler> localizationHandlerObjectFactory;
 
     public CallbackHandler getHandler(String callbackData) {
 
@@ -29,6 +31,8 @@ public class CallbackHandlerFactory {
             return removeLangHandlerObjectFactory.getObject();
         } else if (callbackData.endsWith(CallbackCommandEnum.SET_CURRENT_LANG.getValue())) {
             return setCurrentLangHandlerObjectFactory.getObject();
+        } else if (callbackData.endsWith(CallbackCommandEnum.CHANGE_BOT_LANG.getValue())) {
+            return localizationHandlerObjectFactory.getObject();
         } else {
             throw new IllegalArgumentException("Unknown callback: " + callbackData);
         }
