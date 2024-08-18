@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(255),
     native_lang VARCHAR(10),
     current_lang VARCHAR(10),
+    localization VARCHAR(10),
     created_at DATE NOT NULL DEFAULT CURRENT_DATE
 );
 

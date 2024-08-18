@@ -7,7 +7,6 @@ import bot.telegram.umelon.ulingua.model.entity.UserWord;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.repository.UserWordRepository;
 import bot.telegram.umelon.ulingua.service.LanguageService;
-import bot.telegram.umelon.ulingua.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LanguageService languageService;
     private final UserWordRepository userWordRepository;
-    private final WordService wordService;
 
     private Map<Long, UserState> userStateMap = new HashMap<>();
 
@@ -120,12 +118,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto setCurrentLanguageForUser(long chatId, String langCode) {
+    public UserDto setUserCurrentLanguage(long chatId, String langCode) {
         Optional<User> userOptional = userRepository.findByChatId(chatId);
         if (userOptional.isPresent()) {
             bot.telegram.umelon.ulingua.model.entity.User user = userOptional.get();
 
             user.setCurrentLang(langCode);
+            User updated = userRepository.save(user);
+            return UserDto.toDto(updated);
+        }
+        return null;
+    }
+
+    @Override
+    public UserDto setBotLanguage(long chatId, String langCode) {
+        Optional<User> userOptional = userRepository.findByChatId(chatId);
+        if (userOptional.isPresent()) {
+            bot.telegram.umelon.ulingua.model.entity.User user = userOptional.get();
+
+            user.setLocalization(langCode);
             User updated = userRepository.save(user);
             return UserDto.toDto(updated);
         }

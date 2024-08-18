@@ -7,10 +7,10 @@ import bot.telegram.umelon.ulingua.factory.StateHandlerFactory;
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.handler.StateHandler;
+import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.MenuEnum;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
-import bot.telegram.umelon.ulingua.utils.CountryFlagUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,27 +25,28 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
 public class TelegramBotService extends TelegramLongPollingBot {
 
-    private static final String ADD_LANG_CALLBACK = "_addlang";
+    private LocalMessages localMessages;
 
     private final BotConfig config;
     private final UserService userService;
-    private final LanguageService languageService;
-    private final CountryFlagUtil countryFlagUtil;
     private final CommandHandlerFactory commandHandlerFactory;
     private final StateHandlerFactory stateHandlerFactory;
     private final CallbackHandlerFactory callbackHandlerFactory;
 
     @PostConstruct
     public void initBotCommands() {
+        localMessages = new LocalMessages(Locale.ENGLISH);
 
         List<BotCommand> botCommandList = new ArrayList<>();
-        botCommandList.add(new BotCommand("/profile", "профіль користувача"));
-        botCommandList.add(new BotCommand("/new_word", "додати нове слово на вивчення"));
+        botCommandList.add(new BotCommand("/profile", localMessages.get("menu.profile")));
+        botCommandList.add(new BotCommand("/new_word", localMessages.get("menu.new_word")));
+        botCommandList.add(new BotCommand("/localization", localMessages.get("menu.localization")));
 
         try {
             execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
@@ -59,16 +60,15 @@ public class TelegramBotService extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            String firstName = update.getMessage().getChat().getFirstName();
-            String lastName = update.getMessage().getChat().getLastName();
-            String userName = update.getMessage().getChat().getUserName();
 
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
 
-            UserDto currentUserDto = userService.getByChatId(chatId);
+            UserDto currentUser = userService.getByChatId(chatId);
             UserState userState = userService.getUserState(chatId);
 
+            Locale userLocale = getUserLocale(currentUser);
+            localMessages = new LocalMessages(userLocale);
 
             MenuEnum menuEnum;
             try {
@@ -79,11 +79,11 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
             if (menuEnum != null) {
                 CommandHandler commandHandler = commandHandlerFactory.getHandler(menuEnum);
-                commandHandler.handle(chatId, messageText, update);
+                commandHandler.handle(chatId, messageText, update, localMessages);
             } else {
                 if (userState != null) {
                     StateHandler stateHandler = stateHandlerFactory.getHandler(userState);
-                    stateHandler.handle(chatId, messageText, currentUserDto);
+                    stateHandler.handle(chatId, messageText, currentUser, localMessages);
                 }
             }
         } else if (update.hasCallbackQuery()) {
@@ -91,7 +91,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
             String callbackData = callbackQuery.getData();
 
             CallbackHandler callbackHandler = callbackHandlerFactory.getHandler(callbackData);
-            callbackHandler.handle(callbackQuery);
+            callbackHandler.handle(callbackQuery, localMessages);
         }
     }
 
@@ -104,5 +104,39 @@ public class TelegramBotService extends TelegramLongPollingBot {
     public String getBotToken() {
 
         return config.getToken();
+    }
+
+    public Locale getUserLocale(UserDto currentUser) {
+        if (currentUser != null) {
+            switch (currentUser.getLocalization()) {
+                case "AE":
+                    return new Locale("ar");
+                case "CN":
+                    return new Locale("zh", "CN");
+                case "DE":
+                    return Locale.GERMAN;
+                case "FR":
+                    return Locale.FRENCH;
+                case "ES":
+                    return new Locale("es");
+                case "IT":
+                    return Locale.ITALIAN;
+                case "JP":
+                    return new Locale("ja", "JP");
+                case "KR":
+                    return new Locale("ko", "KR");
+                case "PL":
+                    return new Locale("pl");
+                case "PT":
+                    return new Locale("pt");
+                case "RU":
+                    return Locale.forLanguageTag("ru-RU");
+                case "TR":
+                    return new Locale("tr");
+                case "UA":
+                    return new Locale("uk", "UA");
+            }
+        }
+        return Locale.ENGLISH;
     }
 }

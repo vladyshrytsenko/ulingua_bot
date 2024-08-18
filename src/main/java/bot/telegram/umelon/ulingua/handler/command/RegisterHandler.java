@@ -1,6 +1,7 @@
 package bot.telegram.umelon.ulingua.handler.command;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
+import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.UserService;
@@ -22,11 +23,11 @@ public class RegisterHandler implements CommandHandler {
     private final TelegramUtils telegramUtils;
 
     @Override
-    public void handle(long chatId, String messageText, Update update) {
+    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
 
         UserDto currentUserDto = userService.getByChatId(chatId);
         if (currentUserDto == null) {
-            String text = "Виберіть вашу рідну мову:";
+            String text = localMessages.get("message.select_native_language");
             telegramUtils.sendLanguagesInlineKeyboard(chatId, text, CallbackCommandEnum.ADD_NATIVE_LANG);
         } else {
             List<String> list = new ArrayList<>();
@@ -34,7 +35,7 @@ public class RegisterHandler implements CommandHandler {
                 String langFlag = countryFlagUtil.getFlagByCountry(languageDto.getCountryCode());
                 list.add(langFlag);
             });
-            telegramUtils.sendMessage(chatId, "Ви вже зареєстровані в боті. Список мов для вивчення:\n" + list);
+            telegramUtils.sendMessage(chatId, localMessages.get("message.already_registered") + list);
         }
     }
 }

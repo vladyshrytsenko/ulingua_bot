@@ -24,6 +24,7 @@ public class UserDto {
     private String username;
     private String nativeLang;
     private String currentLang;
+    private String localization;
     private Set<LanguageDto> languages;
     private Date createdAt;
 
@@ -47,6 +48,7 @@ public class UserDto {
             .username(user.getUsername())
             .nativeLang(user.getNativeLang())
             .currentLang(user.getCurrentLang())
+            .localization(user.getLocalization())
             .languages(languagesDto)
             .createdAt(user.getCreatedAt())
             .build();
@@ -82,6 +84,7 @@ public class UserDto {
             .username(userDto.getUsername())
             .nativeLang(userDto.getNativeLang())
             .currentLang(userDto.getCurrentLang())
+            .localization(userDto.getLocalization())
             .languages(languages)
             .createdAt(userDto.getCreatedAt())
             .build();

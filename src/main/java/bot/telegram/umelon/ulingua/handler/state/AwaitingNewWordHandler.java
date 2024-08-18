@@ -1,6 +1,7 @@
 package bot.telegram.umelon.ulingua.handler.state;
 
 import bot.telegram.umelon.ulingua.handler.StateHandler;
+import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+import static java.lang.String.*;
+
 @Component
 @RequiredArgsConstructor
 public class AwaitingNewWordHandler implements StateHandler {
@@ -30,20 +33,18 @@ public class AwaitingNewWordHandler implements StateHandler {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void handle(long chatId, String messageText, UserDto currentUserDto) {
+    public void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages) {
 
         String word = messageText.split(" ")[0];
 
-        String langList = currentUserDto.getLanguages().stream()
+        String langList = currentUser.getLanguages().stream()
             .map(LanguageDto::getUnicode)
             .collect(Collectors.joining(","));
 
-        String chatCompletion = openAIService.getChatCompletion(String.format(
+        String chatCompletion = openAIService.getChatCompletion(format(
             "Provide information about the word '%s' in %s language. Answer in JSON format with the following fields: " +
-            "'exists' (yes or no) if 'no' then in any language from %s, 'language code (2 digits in capital letters)'.",
-            word,
-            currentUserDto.getCurrentLang(),
-            langList
+            "'exists' (yes or no). If 'no' then in any language from %s. But if 'yes', then add the 'language_code' " +
+            "(2 digits in capital letters)'.", word, currentUser.getCurrentLang(), langList
         ));
 
         JsonNode wordInfoJsonNode = null;
@@ -54,11 +55,19 @@ public class AwaitingNewWordHandler implements StateHandler {
         }
 
         if (wordInfoJsonNode.get("exists").textValue().equalsIgnoreCase("yes")) {
-            telegramUtils.sendMessage(chatId, String.format("Записую '%s' до списку на вивчення...", messageText));
-            String languageCode = wordInfoJsonNode.get("language_code").textValue();
-            if (languageCode == null) {
-                languageCode = currentUserDto.getCurrentLang();
+            telegramUtils.sendMessage(chatId, format(localMessages.get("message.adding_word_to_study_list"), messageText));
+            String languageCode;
+            if (wordInfoJsonNode.get("language_code") == null) {
+                languageCode = openAIService.getChatCompletion(
+                    format("'language_code' was empty, although such a word exists. Generate again choosing one " +
+                           "from this list %s in which this word exists. Then output only the code (2 characters).", langList
+                    )
+                );
+
+            } else {
+                languageCode = wordInfoJsonNode.get("language_code").textValue();
             }
+
             LanguageDto byCountryCode = languageService.getByCountryCode(languageCode);
 
             Word newWord = Word.builder()
@@ -66,11 +75,11 @@ public class AwaitingNewWordHandler implements StateHandler {
                 .original(word)
                 .build();
             WordDto createdWord = wordService.create(newWord);
-            userService.addWordForUser(currentUserDto.getId(), createdWord.getId());
+            userService.addWordForUser(currentUser.getId(), createdWord.getId());
 
-            telegramUtils.sendMessage(chatId, "Готово");
+            telegramUtils.sendMessage(chatId, localMessages.get("message.done"));
         } else {
-            telegramUtils.sendMessage(chatId, "Такого слова не існує");
+            telegramUtils.sendMessage(chatId, localMessages.get("message.word_not_exist"));
         }
 
         userService.setUserState(chatId, null);
