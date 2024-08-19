@@ -2,8 +2,10 @@ package bot.telegram.umelon.ulingua.handler.command;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
+import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
+import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class NewWordHandler implements CommandHandler {
 
     private final UserService userService;
+    private final LanguageService languageService;
     private final TelegramUtils telegramUtils;
 
     @Override
@@ -27,7 +30,8 @@ public class NewWordHandler implements CommandHandler {
             message = localMessages.get("message.register_required");
             telegramUtils.sendMessage(chatId, message);
         } else {
-            message = localMessages.get("message.enter_new_word");
+            LanguageDto languageDto = languageService.getByCountryCode(currentUserDto.getCurrentLang());
+            message = String.format(localMessages.get("message.enter_new_word"), languageDto.getUnicode());
             userService.setUserState(chatId, UserState.AWAITING_NEW_WORD);
             telegramUtils.sendMessage(chatId, message);
         }
