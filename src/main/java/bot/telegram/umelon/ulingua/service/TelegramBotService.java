@@ -11,6 +11,7 @@ import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.MenuEnum;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
+import bot.telegram.umelon.ulingua.utils.LocaleUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -47,6 +48,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
         botCommandList.add(new BotCommand("/profile", localMessages.get("menu.profile")));
         botCommandList.add(new BotCommand("/new_word", localMessages.get("menu.new_word")));
         botCommandList.add(new BotCommand("/localization", localMessages.get("menu.localization")));
+        botCommandList.add(new BotCommand("/alphabet", "Alphabet"));
 
         try {
             execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
@@ -67,8 +69,13 @@ public class TelegramBotService extends TelegramLongPollingBot {
             UserDto currentUser = userService.getByChatId(chatId);
             UserState userState = userService.getUserState(chatId);
 
-            Locale userLocale = getUserLocale(currentUser);
-            localMessages = new LocalMessages(userLocale);
+            Locale locale = null;
+            if (currentUser!= null) {
+                locale = LocaleUtils.getLocale(currentUser.getLocalization());
+            } else {
+                locale = LocaleUtils.getLocale(Locale.ENGLISH.getCountry());
+            }
+            localMessages = new LocalMessages(locale);
 
             MenuEnum menuEnum;
             try {
@@ -104,39 +111,5 @@ public class TelegramBotService extends TelegramLongPollingBot {
     public String getBotToken() {
 
         return config.getToken();
-    }
-
-    public Locale getUserLocale(UserDto currentUser) {
-        if (currentUser != null) {
-            switch (currentUser.getLocalization()) {
-                case "AE":
-                    return new Locale("ar");
-                case "CN":
-                    return new Locale("zh", "CN");
-                case "DE":
-                    return Locale.GERMAN;
-                case "FR":
-                    return Locale.FRENCH;
-                case "ES":
-                    return new Locale("es");
-                case "IT":
-                    return Locale.ITALIAN;
-                case "JP":
-                    return new Locale("ja", "JP");
-                case "KR":
-                    return new Locale("ko", "KR");
-                case "PL":
-                    return new Locale("pl");
-                case "PT":
-                    return new Locale("pt");
-                case "RU":
-                    return Locale.forLanguageTag("ru-RU");
-                case "TR":
-                    return new Locale("tr");
-                case "UA":
-                    return new Locale("uk", "UA");
-            }
-        }
-        return Locale.ENGLISH;
     }
 }

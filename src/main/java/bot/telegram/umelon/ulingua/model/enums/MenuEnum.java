@@ -10,6 +10,7 @@ public enum MenuEnum {
     ADD_LANG("/add_lang"),
     NEW_WORD("/new_word"),
     LOCALIZATION("/localization"),
+    ALPHABET("/alphabet"),
     CUSTOM("custom");
 
     private final String value;

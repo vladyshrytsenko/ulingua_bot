@@ -1,6 +1,7 @@
 package bot.telegram.umelon.ulingua.factory;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
+import bot.telegram.umelon.ulingua.handler.command.AlphabetHandler;
 import bot.telegram.umelon.ulingua.handler.command.LocalizationHandler;
 import bot.telegram.umelon.ulingua.handler.command.NewWordHandler;
 import bot.telegram.umelon.ulingua.handler.command.OpenAIHandler;
@@ -19,6 +20,7 @@ public class CommandHandlerFactory {
     private final ObjectFactory<ProfileHandler> profileHandlerObjectFactory;
     private final ObjectFactory<NewWordHandler> newWordHandlerObjectFactory;
     private final ObjectFactory<LocalizationHandler> localizationHandlerObjectFactory;
+    private final ObjectFactory<AlphabetHandler> alphabetHandlerObjectFactory;
 
     private final ObjectFactory<OpenAIHandler> openAIHandlerObjectFactory;
 
@@ -29,6 +31,7 @@ public class CommandHandlerFactory {
             case PROFILE -> profileHandlerObjectFactory.getObject();
             case NEW_WORD -> newWordHandlerObjectFactory.getObject();
             case LOCALIZATION -> localizationHandlerObjectFactory.getObject();
+            case ALPHABET -> alphabetHandlerObjectFactory.getObject();
 
             default -> openAIHandlerObjectFactory.getObject();
         };

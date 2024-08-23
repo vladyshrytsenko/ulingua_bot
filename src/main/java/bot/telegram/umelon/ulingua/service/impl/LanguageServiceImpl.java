@@ -9,9 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +62,18 @@ public class LanguageServiceImpl implements LanguageService {
             languageRepository.deleteById(id);
         } else {
             throw new RuntimeException("Language not found");
+        }
+    }
+
+    public String getAlphabet(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("ABC/alphabet", locale);
+
+        if (locale.equals(new Locale("ja", "JP"))) {
+            String hiragana = bundle.getString("hiragana");
+            String katakana = bundle.getString("katakana");
+            return "Hiragana:\n" + hiragana + "\n\n" + "Katakana:\n" + katakana;
+        } else {
+            return bundle.getString("value");
         }
     }
 

@@ -3,6 +3,7 @@ package bot.telegram.umelon.ulingua.service;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 
 import java.util.List;
+import java.util.Locale;
 
 public interface LanguageService {
 
@@ -16,4 +17,5 @@ public interface LanguageService {
 
     void deleteById(long id);
 
+    String getAlphabet(Locale locale);
 }
