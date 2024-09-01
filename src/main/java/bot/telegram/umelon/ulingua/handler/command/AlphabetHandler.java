@@ -28,6 +28,7 @@ public class AlphabetHandler implements CommandHandler {
 
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
+        userService.setUserState(chatId, null);
 
         UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
         if (currentUserDto == null) {
@@ -42,7 +43,7 @@ public class AlphabetHandler implements CommandHandler {
                 Locale locale = LocaleUtils.getLocale(currentUserDto.getCurrentLang());
                 String alphabet = languageService.getAlphabet(locale);
 
-                telegramUtils.sendMessage(chatId, format("Here is %s alphabet:\n\n%s", byCountryCode.getUnicode(), alphabet));
+                telegramUtils.sendMessage(chatId, format(localMessages.get("message.alphabet_info"), byCountryCode.getUnicode(), alphabet));
             }
         }
     }

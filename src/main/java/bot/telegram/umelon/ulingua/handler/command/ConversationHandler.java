@@ -14,7 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 @RequiredArgsConstructor
-public class NewWordHandler implements CommandHandler {
+public class ConversationHandler implements CommandHandler {
 
     private final UserService userService;
     private final LanguageService languageService;
@@ -32,8 +32,8 @@ public class NewWordHandler implements CommandHandler {
             telegramUtils.sendMessage(chatId, message);
         } else {
             LanguageDto languageDto = languageService.getByCountryCode(currentUserDto.getCurrentLang());
-            message = String.format(localMessages.get("message.enter_new_word"), languageDto.getUnicode());
-            userService.setUserState(chatId, UserState.AWAITING_NEW_WORD);
+            message = String.format(localMessages.get("message.conversation.topic"), languageDto.getUnicode());
+            userService.setUserState(chatId, UserState.AWAITING_CONVERSATION);
             telegramUtils.sendMessage(chatId, message);
         }
     }

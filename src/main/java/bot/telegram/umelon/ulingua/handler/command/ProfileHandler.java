@@ -26,6 +26,7 @@ public class ProfileHandler implements CommandHandler {
 
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
+        userService.setUserState(chatId, null);
 
         UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
         if (currentUserDto == null) {
