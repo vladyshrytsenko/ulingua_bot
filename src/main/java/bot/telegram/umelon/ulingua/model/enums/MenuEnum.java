@@ -11,6 +11,8 @@ public enum MenuEnum {
     NEW_WORD("/new_word"),
     LOCALIZATION("/localization"),
     ALPHABET("/alphabet"),
+    CONVERSATION_CHAT("/conversation_chat"),
+    CANCEL("/cancel"),
     CUSTOM("custom");
 
     private final String value;
