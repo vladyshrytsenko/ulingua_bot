@@ -12,3 +12,7 @@ mvnw
 mvnw.cmd
 
 HELP.md
+
+.settings/
+
+*local.properties
