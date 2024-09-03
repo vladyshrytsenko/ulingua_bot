@@ -47,6 +47,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
         List<BotCommand> botCommandList = new ArrayList<>();
         botCommandList.add(new BotCommand("/profile", localMessages.get("menu.profile")));
         botCommandList.add(new BotCommand("/new_word", localMessages.get("menu.new_word")));
+        botCommandList.add(new BotCommand("/writing_sentence", "writing_sentence"));
         botCommandList.add(new BotCommand("/localization", localMessages.get("menu.localization")));
         botCommandList.add(new BotCommand("/alphabet", "Alphabet"));
         botCommandList.add(new BotCommand("/conversation_chat", "Free-topic communication with AI"));

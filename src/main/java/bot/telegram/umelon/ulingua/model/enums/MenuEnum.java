@@ -12,6 +12,7 @@ public enum MenuEnum {
     LOCALIZATION("/localization"),
     ALPHABET("/alphabet"),
     CONVERSATION_CHAT("/conversation_chat"),
+    WRITING_SENTENCE("/writing_sentence"),
     CANCEL("/cancel"),
     CUSTOM("custom");
 

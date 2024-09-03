@@ -9,9 +9,11 @@ public enum CallbackCommandEnum {
     REMOVE_LANG("_remove_lang"),
     ADD_NATIVE_LANG("_add_native_lang"),
     SET_CURRENT_LANG("_set_current_lang"),
-    CHANGE_BOT_LANG("_change_bot_lang");
+    CHANGE_BOT_LANG("_change_bot_lang"),
+    WRITING_SENTENCE_DISCUSS("_writing_sentence_discuss");
 
     private final String value;
+    private String customDescription;
 
     CallbackCommandEnum(String value) {
         this.value = value;
@@ -24,5 +26,13 @@ public enum CallbackCommandEnum {
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
+    public String getDescription() {
+        return customDescription == null ? null : customDescription;
+    }
+
+    public void setDescription(String customDescription) {
+        this.customDescription = customDescription;
     }
 }
