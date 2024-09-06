@@ -2,6 +2,7 @@ package bot.telegram.umelon.ulingua.model.dto;
 
 import bot.telegram.umelon.ulingua.model.entity.Language;
 import bot.telegram.umelon.ulingua.model.entity.User;
+import bot.telegram.umelon.ulingua.model.entity.Word;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class UserDto {
     private String currentLang;
     private String localization;
     private Set<LanguageDto> languages;
+    private Set<WordDto> words;
     private Date createdAt;
 
     public static UserDto toDto(User user) {
@@ -40,6 +42,13 @@ public class UserDto {
                 .collect(Collectors.toSet());
         }
 
+        Set<WordDto> wordsDto = new HashSet<>();
+        if (user.getWords() != null) {
+            wordsDto = user.getWords().stream()
+                .map(WordDto::toDto)
+                .collect(Collectors.toSet());
+        }
+
         return UserDto.builder()
             .id(user.getId())
             .chatId(user.getChatId())
@@ -50,6 +59,7 @@ public class UserDto {
             .currentLang(user.getCurrentLang())
             .localization(user.getLocalization())
             .languages(languagesDto)
+            .words(wordsDto)
             .createdAt(user.getCreatedAt())
             .build();
     }
@@ -76,6 +86,13 @@ public class UserDto {
                 .collect(Collectors.toSet());
         }
 
+        Set<Word> words = new HashSet<>();
+        if (userDto.getWords() != null) {
+            words = userDto.getWords().stream()
+                .map(WordDto::toEntity)
+                .collect(Collectors.toSet());
+        }
+
         return User.builder()
             .id(userDto.getId())
             .chatId(userDto.getChatId())
@@ -86,6 +103,7 @@ public class UserDto {
             .currentLang(userDto.getCurrentLang())
             .localization(userDto.getLocalization())
             .languages(languages)
+            .words(words)
             .createdAt(userDto.getCreatedAt())
             .build();
     }

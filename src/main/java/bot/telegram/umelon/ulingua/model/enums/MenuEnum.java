@@ -13,8 +13,9 @@ public enum MenuEnum {
     ALPHABET("/alphabet"),
     CONVERSATION_CHAT("/conversation_chat"),
     WRITING_SENTENCE("/writing_sentence"),
-    CANCEL("/cancel"),
-    CUSTOM("custom");
+    TRAIN("/train"),
+    LANGUAGE_BY_COUNTRY("/language_by_country"),
+    CANCEL("/cancel");
 
     private final String value;
 
