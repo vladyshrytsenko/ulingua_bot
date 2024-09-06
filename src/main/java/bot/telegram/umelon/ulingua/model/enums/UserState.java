@@ -4,7 +4,8 @@ public enum UserState {
     AWAITING_NEW_WORD,
     AWAITING_CONVERSATION,
     AWAITING_SENTENCE,
-    AWAITING_SENTENCE_DISCUSS;
+    AWAITING_SENTENCE_DISCUSS,
+    AWAITING_COUNTRY;
 
     private String customDescription;
 

@@ -33,7 +33,7 @@ public class Word {
     @Column(name = "original", nullable = false, length = 64)
     private String original;
 
-    @ManyToMany(mappedBy = "words")
-    private List<User> users;
+//    @ManyToMany(mappedBy = "words")
+//    private List<User> users;
 
 }

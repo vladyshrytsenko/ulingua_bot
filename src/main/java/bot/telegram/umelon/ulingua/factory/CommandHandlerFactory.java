@@ -4,11 +4,13 @@ import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.handler.command.AlphabetHandler;
 import bot.telegram.umelon.ulingua.handler.command.CancelHandler;
 import bot.telegram.umelon.ulingua.handler.command.ConversationHandler;
+import bot.telegram.umelon.ulingua.handler.command.LanguageByCountryHandler;
 import bot.telegram.umelon.ulingua.handler.command.LocalizationHandler;
 import bot.telegram.umelon.ulingua.handler.command.NewWordHandler;
 import bot.telegram.umelon.ulingua.handler.command.OpenAIHandler;
 import bot.telegram.umelon.ulingua.handler.command.ProfileHandler;
 import bot.telegram.umelon.ulingua.handler.command.RegisterHandler;
+import bot.telegram.umelon.ulingua.handler.command.TrainHandler;
 import bot.telegram.umelon.ulingua.handler.command.WritingSentenceHandler;
 import bot.telegram.umelon.ulingua.model.enums.MenuEnum;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ public class CommandHandlerFactory {
     private final ObjectFactory<ConversationHandler> conversationOF;
     private final ObjectFactory<WritingSentenceHandler> writingSentenceOF;
     private final ObjectFactory<CancelHandler> cancelOF;
+    private final ObjectFactory<TrainHandler> trainOF;
+    private final ObjectFactory<LanguageByCountryHandler> languageByCountryOF;
 
     private final ObjectFactory<OpenAIHandler> openAIOF;
 
@@ -40,6 +44,8 @@ public class CommandHandlerFactory {
             case ALPHABET -> alphabetOF.getObject();
             case CONVERSATION_CHAT -> conversationOF.getObject();
             case WRITING_SENTENCE -> writingSentenceOF.getObject();
+            case TRAIN -> trainOF.getObject();
+            case LANGUAGE_BY_COUNTRY -> languageByCountryOF.getObject();
             case CANCEL -> cancelOF.getObject();
 
             default -> openAIOF.getObject();
