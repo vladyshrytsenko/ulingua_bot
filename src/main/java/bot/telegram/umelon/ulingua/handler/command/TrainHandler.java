@@ -14,15 +14,13 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class TrainHandler implements CommandHandler {
-
-    private final UserService userService;
-    private final LanguageService languageService;
-    private final TelegramUtils telegramUtils;
 
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
@@ -33,32 +31,32 @@ public class TrainHandler implements CommandHandler {
             String message = localMessages.get("message.register_required");
             telegramUtils.sendMessage(chatId, message);
         } else {
-            LanguageDto nativeLang = languageService.getByCountryCode(currentUserDto.getNativeLang());
-            LanguageDto currentLang = languageService.getByCountryCode(currentUserDto.getCurrentLang());
-            List<String> list = new ArrayList<>();
-            currentUserDto.getLanguages().forEach(languageDto -> list.add(languageDto.getUnicode()));
+            Map<LanguageDto, Integer> wordCountByLanguage = new HashMap<>();
+            currentUserDto.getWords().forEach(word -> {
+                wordCountByLanguage.merge(word.getLanguage(), 1, Integer::sum);
+            });
 
-//            String userInfo = String.format(localMessages.get("user.info"), currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
-            String trainInfo = "Слiв вивчено: " + currentUserDto.getWords().size();
+            StringBuilder sb = new StringBuilder();
+            wordCountByLanguage.forEach((language, count) -> {
+                sb.append(language.getUnicode()).append(" - ").append(count).append("\n");
+            });
+            String trainInfo = String.format("""
+                Слiв вивчено:
+                %s
+                Обмеження на сьогодні: %d
+                """, sb, currentUserDto.getDailyLimit());
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
             telegramUtils.sendInlineKeyboard(chatId, trainInfo, buttons);
         }
     }
 
     private List<ButtonData> getButtonDataList(UserDto currentUserDto, LocalMessages localMessages) {
-        List<ButtonData> buttons;
-        if (currentUserDto.getLanguages().size() > 1) {
-            buttons = List.of(
-                new ButtonData(localMessages.get("button.add_language"), CallbackCommandEnum.ADD_LANG, 1),
-                new ButtonData(localMessages.get("button.change_current_language"), CallbackCommandEnum.SET_CURRENT_LANG, 1),
-                new ButtonData(localMessages.get("button.remove_language"), CallbackCommandEnum.REMOVE_LANG, 2)
-            );
-        } else {
-            buttons = List.of(
-                new ButtonData(localMessages.get("button.add_language"), CallbackCommandEnum.ADD_LANG, 1)
-            );
-        }
-        return buttons;
+        return List.of(
+            new ButtonData("Випадкове слово", CallbackCommandEnum.RANDOM_NEW_WORD, 1),
+            new ButtonData("Змiнити лiмiт", CallbackCommandEnum.CHANGE_DAILY_LIMIT, 1));
     }
+
+    private final UserService userService;
+    private final TelegramUtils telegramUtils;
 }
 

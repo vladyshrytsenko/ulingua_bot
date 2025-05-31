@@ -16,14 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class OpenAIService {
 
-    private final static String API_URL = "https://api.openai.com/v1/chat/completions";
-
-    @Value("${openai.api-key}")
-    private String apiKey;
-
-    private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
-
     public String getChatCompletion(String messageText) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -47,5 +39,12 @@ public class OpenAIService {
             return null;
         }
     }
-}
 
+    private final static String API_URL = "https://api.openai.com/v1/chat/completions";
+
+    @Value("${openai.api-key}")
+    private String apiKey;
+
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+}

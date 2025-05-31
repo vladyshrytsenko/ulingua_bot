@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,9 +18,6 @@ import java.util.ResourceBundle;
 @Service
 @RequiredArgsConstructor
 public class LanguageServiceImpl implements LanguageService {
-
-    private final LanguageRepository languageRepository;
-    private final CountryFlagUtil countryFlagUtil;
 
     @Override
     public void initializeLanguages() {
@@ -77,4 +73,6 @@ public class LanguageServiceImpl implements LanguageService {
         }
     }
 
+    private final LanguageRepository languageRepository;
+    private final CountryFlagUtil countryFlagUtil;
 }

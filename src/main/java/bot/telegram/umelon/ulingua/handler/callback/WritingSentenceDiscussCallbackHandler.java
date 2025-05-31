@@ -13,9 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 @RequiredArgsConstructor
 public class WritingSentenceDiscussCallbackHandler implements CallbackHandler {
 
-    private final UserService userService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
         Long callbackChatId = callbackQuery.getMessage().getChatId();
@@ -23,4 +20,7 @@ public class WritingSentenceDiscussCallbackHandler implements CallbackHandler {
         telegramUtils.sendMessage(callbackChatId, localMessages.get("message.conversation.add_comment"));
         userService.setUserState(callbackChatId, UserState.AWAITING_SENTENCE_DISCUSS);
     }
+
+    private final UserService userService;
+    private final TelegramUtils telegramUtils;
 }

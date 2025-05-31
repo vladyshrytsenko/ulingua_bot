@@ -15,14 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StateHandlerFactory {
 
-    private final ObjectFactory<AwaitingNewWordHandler> awaitingNewWordOF;
-    private final ObjectFactory<AwaitingConversationHandler> awaitingConversationOF;
-    private final ObjectFactory<AwaitingSentenceHandler> awaitingSentenceOF;
-    private final ObjectFactory<AwaitingSentenceDiscussHandler> awaitingSentenceDiscussOF;
-    private final ObjectFactory<AwaitingLanguageByCountryHandler> awaitingLanguageByCountryOF;
-
     public StateHandler getHandler(UserState userState) {
-
         return switch (userState) {
             case AWAITING_NEW_WORD -> awaitingNewWordOF.getObject();
             case AWAITING_CONVERSATION -> awaitingConversationOF.getObject();
@@ -33,4 +26,10 @@ public class StateHandlerFactory {
             default -> throw new IllegalArgumentException("Unknown state: " + userState);
         };
     }
+
+    private final ObjectFactory<AwaitingNewWordHandler> awaitingNewWordOF;
+    private final ObjectFactory<AwaitingConversationHandler> awaitingConversationOF;
+    private final ObjectFactory<AwaitingSentenceHandler> awaitingSentenceOF;
+    private final ObjectFactory<AwaitingSentenceDiscussHandler> awaitingSentenceDiscussOF;
+    private final ObjectFactory<AwaitingLanguageByCountryHandler> awaitingLanguageByCountryOF;
 }

@@ -12,14 +12,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 public class OpenAIHandler implements CommandHandler {
 
-    private final OpenAIService openAIService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
-
         String response = openAIService.getChatCompletion(messageText);
         telegramUtils.sendMessage(chatId, response);
-
     }
+
+    private final OpenAIService openAIService;
+    private final TelegramUtils telegramUtils;
 }

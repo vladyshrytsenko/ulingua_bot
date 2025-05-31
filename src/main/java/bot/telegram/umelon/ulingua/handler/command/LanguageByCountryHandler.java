@@ -14,9 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 public class LanguageByCountryHandler implements CommandHandler {
 
-    private final UserService userService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
         userService.setUserState(chatId, null);
@@ -33,4 +30,7 @@ public class LanguageByCountryHandler implements CommandHandler {
             telegramUtils.sendMessage(chatId, message);
         }
     }
+
+    private final UserService userService;
+    private final TelegramUtils telegramUtils;
 }

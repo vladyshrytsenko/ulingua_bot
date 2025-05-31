@@ -14,9 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 public class LocalizationHandler implements CommandHandler {
 
-    private final TelegramUtils telegramUtils;
-    private final UserService userService;
-
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
         UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
@@ -29,4 +26,7 @@ public class LocalizationHandler implements CommandHandler {
             );
         }
     }
+
+    private final TelegramUtils telegramUtils;
+    private final UserService userService;
 }

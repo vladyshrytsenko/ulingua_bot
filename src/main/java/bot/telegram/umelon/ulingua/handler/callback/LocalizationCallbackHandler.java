@@ -16,9 +16,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class LocalizationCallbackHandler implements CallbackHandler {
 
-    private final UserService userService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
 
@@ -38,4 +35,7 @@ public class LocalizationCallbackHandler implements CallbackHandler {
             );
         }
     }
+
+    private final UserService userService;
+    private final TelegramUtils telegramUtils;
 }

@@ -22,10 +22,6 @@ import static java.lang.String.*;
 @RequiredArgsConstructor
 public class AlphabetHandler implements CommandHandler {
 
-    private final UserService userService;
-    private final LanguageService languageService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
         userService.setUserState(chatId, null);
@@ -47,4 +43,8 @@ public class AlphabetHandler implements CommandHandler {
             }
         }
     }
+
+    private final UserService userService;
+    private final LanguageService languageService;
+    private final TelegramUtils telegramUtils;
 }

@@ -14,8 +14,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WordServiceImpl implements WordService {
 
-    private final WordRepository wordRepository;
-
     @Override
     public WordDto getById(long id) {
         Word word = wordRepository.findById(id).orElse(null);
@@ -23,9 +21,14 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
+    public Word getByOriginal(String original) {
+        return wordRepository.findByOriginalIgnoreCase(original).orElse(null);
+    }
+
+    @Override
     @Transactional
     public WordDto create(Word word) {
-        Optional<Word> existingWordOptional = wordRepository.findByOriginal(word.getOriginal());
+        Optional<Word> existingWordOptional = wordRepository.findByOriginalIgnoreCase(word.getOriginal());
         Word savedWord;
 
         if (existingWordOptional.isPresent()) {
@@ -45,4 +48,6 @@ public class WordServiceImpl implements WordService {
 
         return WordDto.toDto(savedWord);
     }
+
+    private final WordRepository wordRepository;
 }

@@ -16,13 +16,13 @@ public interface UserService {
 
     UserDto save(User user);
 
-    UserDto addUserLanguage(long chatId, long languageId);
+    void addUserLanguage(long chatId, long languageId);
 
-    UserDto removeUserLanguage(long chatId, long languageId);
+    void removeUserLanguage(long chatId, long languageId);
 
-    UserDto setUserCurrentLanguage(long chatId, String langCode);
+    void setUserCurrentLanguage(long chatId, String langCode);
 
-    UserDto setBotLanguage(long chatId, String langCode);
+    void setBotLanguage(long chatId, String langCode);
 
-    void addWordForUser(long userId, long wordId);
+    void setDailyLimit(long chatId, byte dailyLimit);
 }

@@ -16,11 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 @RequiredArgsConstructor
 public class AddLangCallbackHandler implements CallbackHandler {
 
-    private final CountryFlagUtil countryFlagUtil;
-    private final LanguageService languageService;
-    private final UserService userService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
 
@@ -45,4 +40,9 @@ public class AddLangCallbackHandler implements CallbackHandler {
             }
         }
     }
+
+    private final CountryFlagUtil countryFlagUtil;
+    private final LanguageService languageService;
+    private final UserService userService;
+    private final TelegramUtils telegramUtils;
 }

@@ -8,7 +8,10 @@ CREATE TABLE IF NOT EXISTS users (
     native_lang VARCHAR(10),
     current_lang VARCHAR(10),
     localization VARCHAR(10),
-    created_at DATE NOT NULL DEFAULT CURRENT_DATE
+    created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+    daily_limit SMALLINT NOT NULL,
+
+    CONSTRAINT unique_chat_id UNIQUE (chat_id)
 );
 
 CREATE TABLE IF NOT EXISTS languages (
@@ -24,14 +27,9 @@ CREATE TABLE IF NOT EXISTS words (
 );
 
 CREATE TABLE IF NOT EXISTS user_words (
-    user_id INTEGER REFERENCES users(id),
-    word_id INTEGER REFERENCES words(id),
-    PRIMARY KEY (user_id, word_id),
-    usage_frequency INTEGER DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS user_languages (
-    user_id INTEGER REFERENCES users(id),
-    lang_id INTEGER REFERENCES languages(id),
-    PRIMARY KEY (user_id, lang_id)
+    user_id BIGINT REFERENCES users(id),
+    word_id BIGINT REFERENCES words(id),
+    progress TEXT NOT NULL,
+    created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+    PRIMARY KEY (user_id, word_id)
 );

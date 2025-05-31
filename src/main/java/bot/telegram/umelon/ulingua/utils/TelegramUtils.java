@@ -6,15 +6,20 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,123 +27,131 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.commons.lang3.StringUtils.containsAny;
+import static java.lang.Math.*;
 
 @Component
 @RequiredArgsConstructor
 public class TelegramUtils {
 
-    private final TelegramLongPollingBot bot;
-    private final LanguageService languageService;
-    private final UserService userService;
-
     public void sendMessage(long chatId, String text) {
-
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(text);
+        SendMessage sendMessage = SendMessage.builder()
+            .chatId(chatId)
+            .text(text)
+            .build();
 
         try {
-            bot.execute(sendMessage);
+            this.telegramClient.execute(sendMessage);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void removeKeyBoard(long chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Removing keyboard...");
+        SendMessage message = SendMessage.builder()
+            .chatId(chatId)
+            .text("Removing keyboard...")
+            .build();
 
-        ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
-        replyKeyboardRemove.setRemoveKeyboard(true);
+        ReplyKeyboardRemove replyKeyboardRemove = ReplyKeyboardRemove.builder()
+            .removeKeyboard(true)
+            .build();
         message.setReplyMarkup(replyKeyboardRemove);
 
         try {
-            bot.execute(message);
+            this.telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
     public void sendEditMessageText(long chatId, long messageId, String text){
-        EditMessageText message = new EditMessageText();
-        message.setChatId(String.valueOf(chatId));
-        message.setText(text);
-        message.setMessageId((int) messageId);
+        EditMessageText message = EditMessageText.builder()
+            .chatId(chatId)
+            .text(text)
+            .messageId(toIntExact(messageId))
+            .build();
 
         try {
-            bot.execute(message);
+            this.telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.getMessage();
         }
     }
 
-    public void sendEditMessageTextWithInlineKeyboard(long chatId, long messageId, String text, CallbackCommandEnum command) {
-        EditMessageText message = new EditMessageText();
-        message.setChatId(String.valueOf(chatId));
-        message.setText(text);
-        message.setMessageId((int) messageId);
-
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-
-        List<LanguageDto> languages = languageService.findAll();
-        int buttonsPerRow = 3;
-        List<InlineKeyboardButton> row = new ArrayList<>();
-
-        int count = 0;
-
-        UserDto currentUser = userService.getByChatId(chatId);
-
-        if (currentUser != null) {
-            languages.removeIf(
-                languageDto -> currentUser.getLanguages().stream()
-                                   .anyMatch(lang -> lang.getCountryCode().equals(languageDto.getCountryCode())) ||
-                               currentUser.getNativeLang().equals(languageDto.getCountryCode())
-            );
-        }
-
-        for (LanguageDto lang : languages) {
-            if (count % buttonsPerRow == 0 && !row.isEmpty()) {
-                keyboard.add(row);
-                row = new ArrayList<>();
-            }
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(lang.getUnicode());
-
-            String callbackData = lang.getCountryCode().concat(command.getValue());
-            button.setCallbackData(callbackData);
-            row.add(button);
-            count++;
-        }
-        if (!row.isEmpty()) {
-            keyboard.add(row);
-        }
-
-        inlineKeyboardMarkup.setKeyboard(keyboard);
-        message.setReplyMarkup(inlineKeyboardMarkup);
+    public void sendDeleteMessageRequest(long chatId, long messageId) {
+        DeleteMessage deleteMessage = DeleteMessage.builder()
+            .chatId(chatId)
+            .messageId(toIntExact(messageId))
+            .build();
 
         try {
-            bot.execute(message);
+            this.telegramClient.execute(deleteMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
+    public void sendEditMessageTextWithInlineKeyboard(long chatId, long messageId, String text, CallbackCommandEnum command) {
+        EditMessageText message = EditMessageText.builder()
+            .chatId(chatId)
+            .text(text)
+            .messageId(Math.toIntExact(messageId))
+            .build();
+
+        List<InlineKeyboardRow> keyboard = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        int buttonsPerRow = 3;
+
+        List<LanguageDto> languages = languageService.findAll();
+        UserDto currentUser = userService.getByChatId(chatId);
+
+        if (currentUser != null) {
+            languages.removeIf(
+                languageDto -> currentUser.getLanguages().stream()
+                                   .anyMatch(lang -> lang.getCountryCode().equals(languageDto.getCountryCode())) ||
+                               currentUser.getNativeLang().equals(languageDto.getCountryCode())
+            );
+        }
+
+        for (int i = 0; i < languages.size(); i++) {
+            LanguageDto lang = languages.get(i);
+
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(lang.getUnicode())
+                .callbackData(lang.getCountryCode().concat(command.getValue()))
+                .build();
+
+            row.add(button);
+
+            if ((i + 1) % buttonsPerRow == 0 || i == languages.size() - 1) {
+                keyboard.add(new InlineKeyboardRow(new ArrayList<>(row)));
+                row.clear();
+            }
+        }
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = InlineKeyboardMarkup.builder()
+            .keyboard(keyboard)
+            .build();
+
+        message.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            this.telegramClient.execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void sendLanguagesInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
+        SendMessage message = SendMessage.builder()
+            .chatId(chatId)
+            .text(text)
+            .build();
 
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-
+        List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
         List<LanguageDto> languages = languageService.findAll();
 
         int buttonsPerRow = 3;
-        List<InlineKeyboardButton> row = new ArrayList<>();
 
         UserDto currentUser = userService.getByChatId(chatId);
         if (currentUser != null) {
@@ -149,41 +162,46 @@ public class TelegramUtils {
             );
         }
 
-        int count = 0;
-        for (LanguageDto lang : languages) {
-            if (count % buttonsPerRow == 0 && !row.isEmpty()) {
-                keyboard.add(row);
-                row = new ArrayList<>();
-            }
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(lang.getUnicode());
+        InlineKeyboardRow currentRow = new InlineKeyboardRow();
+        for (int i = 0; i < languages.size(); i++) {
+            LanguageDto lang = languages.get(i);
 
             String callbackData = lang.getCountryCode().concat(command.getValue());
-            button.setCallbackData(callbackData);
-            row.add(button);
-            count++;
-        }
-        if (!row.isEmpty()) {
-            keyboard.add(row);
+
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(lang.getUnicode())
+                .callbackData(callbackData)
+                .build();
+
+            currentRow.add(button);
+
+            if ((i + 1) % buttonsPerRow == 0 || i == languages.size() - 1) {
+                keyboardRows.add(currentRow);
+                currentRow = new InlineKeyboardRow();
+            }
         }
 
-        inlineKeyboardMarkup.setKeyboard(keyboard);
+        InlineKeyboardMarkup inlineKeyboardMarkup = InlineKeyboardMarkup.builder()
+            .keyboard(keyboardRows)
+            .build();
+
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
-            bot.execute(message);
+            this.telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
     public void sendUserLanguagesInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
-        SendMessage message = new SendMessage();
-        message.setChatId(String.valueOf(chatId));
-        message.setText(text);
+        SendMessage message = SendMessage.builder()
+            .chatId(chatId)
+            .text(text)
+            .build();
 
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        InlineKeyboardMarkup inlineKeyboardMarkup = InlineKeyboardMarkup.builder().build();
+        List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
 
         int buttonsPerRow = 3;
         List<InlineKeyboardButton> row = new ArrayList<>();
@@ -197,58 +215,150 @@ public class TelegramUtils {
 
         int count = 0;
         for (LanguageDto lang : userLanguages) {
-            if (count % buttonsPerRow == 0 && !row.isEmpty()) {
-                keyboard.add(new ArrayList<>(row));
-                row.clear();
-            }
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(lang.getUnicode());
-            button.setCallbackData(lang.getCountryCode().concat(command.getValue()));
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(lang.getUnicode())
+                .callbackData(lang.getCountryCode().concat(command.getValue()))
+                .build();
+
             row.add(button);
             count++;
-        }
-        if (!row.isEmpty()) {
-            keyboard.add(row);
+
+            if (count % buttonsPerRow == 0) {
+                keyboardRows.add(new InlineKeyboardRow(row));
+                row = new ArrayList<>();
+            }
         }
 
-        inlineKeyboardMarkup.setKeyboard(keyboard);
+        if (!row.isEmpty()) {
+            keyboardRows.add(new InlineKeyboardRow(row));
+        }
+
+        inlineKeyboardMarkup.setKeyboard(keyboardRows);
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
-            bot.execute(message);
+            this.telegramClient.execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendEditMessageTextWithInlineKeyboard(Long chatId, long messageId, String text, List<ButtonData> buttonDataList) {
+        EditMessageText message = EditMessageText.builder()
+            .chatId(chatId)
+            .text(text)
+            .messageId(Math.toIntExact(messageId))
+            .build();
+
+        Map<Integer, List<InlineKeyboardButton>> rowsMap = new HashMap<>();
+
+        for (ButtonData buttonData : buttonDataList) {
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(buttonData.getText())
+                .callbackData(buttonData.getCallbackCommand().getValue())
+                .build();
+
+            rowsMap.computeIfAbsent(buttonData.getRowNumber(), k -> new ArrayList<>()).add(button);
+        }
+
+        List<InlineKeyboardRow> rowsInLine = new ArrayList<>();
+        for (List<InlineKeyboardButton> row : rowsMap.values()) {
+            rowsInLine.add(new InlineKeyboardRow(row));
+        }
+
+        InlineKeyboardMarkup markupInLine = InlineKeyboardMarkup.builder()
+            .keyboard(rowsInLine)
+            .build();
+
+        message.setReplyMarkup(markupInLine);
+
+        try {
+            this.telegramClient.execute(message);
+        } catch (TelegramApiException e) {
+            this.sendMessageTextWithInlineKeyboard(chatId, text, buttonDataList);
+        }
+    }
+
+    public void sendMessageTextWithInlineKeyboard(Long chatId, String text, List<ButtonData> buttonDataList) {
+        SendMessage message = SendMessage.builder()
+            .chatId(chatId)
+            .text(text)
+            .build();
+
+        Map<Integer, List<InlineKeyboardButton>> rowsMap = new HashMap<>();
+
+        for (ButtonData buttonData : buttonDataList) {
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(buttonData.getText())
+                .callbackData(buttonData.getCallbackCommand().getValue())
+                .build();
+
+            rowsMap.computeIfAbsent(buttonData.getRowNumber(), k -> new ArrayList<>()).add(button);
+        }
+
+        List<InlineKeyboardRow> rowsInLine = new ArrayList<>();
+        for (List<InlineKeyboardButton> row : rowsMap.values()) {
+            rowsInLine.add(new InlineKeyboardRow(row));
+        }
+
+        InlineKeyboardMarkup markupInLine = InlineKeyboardMarkup.builder()
+            .keyboard(rowsInLine)
+            .build();
+
+        message.setReplyMarkup(markupInLine);
+
+        try {
+            this.telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
     public void sendInlineKeyboard(Long chatId, String text, List<ButtonData> buttonDataList) {
-        SendMessage message = new SendMessage();
-        message.setChatId(String.valueOf(chatId));
-        message.setText(text);
+        SendMessage message = SendMessage.builder()
+            .chatId(chatId)
+            .text(text)
+            .build();
 
-        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
         Map<Integer, List<InlineKeyboardButton>> rowsMap = new HashMap<>();
 
         for (ButtonData buttonData : buttonDataList) {
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(buttonData.getText());
-            button.setCallbackData(buttonData.getCallbackCommand().getValue());
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(buttonData.getText())
+                .callbackData(buttonData.getCallbackCommand().getValue())
+                .build();
+
             rowsMap.computeIfAbsent(buttonData.getRowNumber(), k -> new ArrayList<>()).add(button);
         }
 
-        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>(rowsMap.values());
+        List<InlineKeyboardRow> rowsInLine = new ArrayList<>();
+        for (List<InlineKeyboardButton> row : rowsMap.values()) {
+            rowsInLine.add(new InlineKeyboardRow(row));
+        }
 
-        markupInLine.setKeyboard(rowsInLine);
+        InlineKeyboardMarkup markupInLine = InlineKeyboardMarkup.builder()
+            .keyboard(rowsInLine)
+            .build();
+
         message.setReplyMarkup(markupInLine);
 
         try {
-            bot.execute(message);
+            this.telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
-    private static boolean containsEmoji(String text) {
-        return containsAny(text, "\uD83C\uDDE6-\uD83C\uDDFA");
+    @Value("${bot.api-key}")
+    private String token;
+
+    private TelegramClient telegramClient;
+
+    @PostConstruct
+    public void init() {
+        this.telegramClient = new OkHttpTelegramClient(this.token);
     }
+
+    private final LanguageService languageService;
+    private final UserService userService;
 }

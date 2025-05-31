@@ -13,8 +13,6 @@ import java.util.Map;
 @PropertySource("classpath:country-flags.properties")
 public class CountryFlagUtil {
 
-    private final Map<String, String> countryMapping = new HashMap<>();
-
     public CountryFlagUtil(@Value("${country.flags.mapping}") String mapping) {
         parseMapping(mapping.replace("\\", ""));
     }
@@ -32,4 +30,6 @@ public class CountryFlagUtil {
     public String getFlagByCountry(String country) {
         return countryMapping.get(country);
     }
+
+    private final Map<String, String> countryMapping = new HashMap<>();
 }
