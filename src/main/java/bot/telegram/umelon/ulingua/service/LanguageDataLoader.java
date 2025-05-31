@@ -8,11 +8,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LanguageDataLoader implements CommandLineRunner {
 
-    private final LanguageService languageService;
-
     @Override
     public void run(String... args) {
-        languageService.initializeLanguages();
+        this.languageService.initializeLanguages();
     }
 
+    private final LanguageService languageService;
 }

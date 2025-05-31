@@ -15,9 +15,6 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class AwaitingSentenceDiscussHandler implements StateHandler {
 
-    private final TelegramUtils telegramUtils;
-    private final OpenAIService openAIService;
-
     @Override
     public void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages) {
 
@@ -30,6 +27,8 @@ public class AwaitingSentenceDiscussHandler implements StateHandler {
 
             telegramUtils.sendMessage(chatId, discussionPrompt);
         }
-
     }
+
+    private final TelegramUtils telegramUtils;
+    private final OpenAIService openAIService;
 }

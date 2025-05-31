@@ -1,6 +1,5 @@
 package bot.telegram.umelon.ulingua.service;
 
-import bot.telegram.umelon.ulingua.config.BotConfig;
 import bot.telegram.umelon.ulingua.factory.CallbackHandlerFactory;
 import bot.telegram.umelon.ulingua.factory.CommandHandlerFactory;
 import bot.telegram.umelon.ulingua.factory.StateHandlerFactory;
@@ -14,58 +13,55 @@ import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.utils.LocaleUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
+import org.telegram.telegrambots.longpolling.BotSession;
+import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
+import org.telegram.telegrambots.longpolling.starter.AfterBotRegistration;
+import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
+import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class TelegramBotService extends TelegramLongPollingBot {
-
-    private LocalMessages localMessages;
-
-    private final BotConfig config;
-    private final UserService userService;
-    private final CommandHandlerFactory commandHandlerFactory;
-    private final StateHandlerFactory stateHandlerFactory;
-    private final CallbackHandlerFactory callbackHandlerFactory;
+public class TelegramBotService implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
     @PostConstruct
     public void initBotCommands() {
         localMessages = new LocalMessages(Locale.ENGLISH);
 
-        List<BotCommand> botCommandList = new ArrayList<>();
-        botCommandList.add(new BotCommand("/profile", localMessages.get("menu.profile")));
-//        botCommandList.add(new BotCommand("/train", "Train"));
-        botCommandList.add(new BotCommand("/language_by_country", "language_by_country"));
-        botCommandList.add(new BotCommand("/new_word", localMessages.get("menu.new_word")));
-        botCommandList.add(new BotCommand("/writing_sentence", "writing_sentence"));
-        botCommandList.add(new BotCommand("/localization", localMessages.get("menu.localization")));
-        botCommandList.add(new BotCommand("/alphabet", "Alphabet"));
-        botCommandList.add(new BotCommand("/conversation_chat", "Free-topic communication with AI"));
-        botCommandList.add(new BotCommand("/cancel", "Cancel the current operation"));
+        List<BotCommand> botCommandList = new ArrayList<>() {{
+            add(new BotCommand("/profile", localMessages.get("menu.profile")));
+            add(new BotCommand("/train", "Train"));
+            add(new BotCommand("/language_by_country", "language_by_country"));
+            add(new BotCommand("/new_word", localMessages.get("menu.new_word")));
+            add(new BotCommand("/writing_sentence", "writing_sentence"));
+            add(new BotCommand("/localization", localMessages.get("menu.localization")));
+            add(new BotCommand("/alphabet", "Alphabet"));
+            add(new BotCommand("/conversation_chat", "Free-topic communication with AI"));
+            add(new BotCommand("/cancel", "Cancel the current operation"));
+        }};
 
         try {
-            execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
+            this.telegramClient.execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @SneakyThrows
     @Override
-    public void onUpdateReceived(Update update) {
-
+    public void consume(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
 
             String messageText = update.getMessage().getText();
@@ -107,14 +103,36 @@ public class TelegramBotService extends TelegramLongPollingBot {
         }
     }
 
+    @AfterBotRegistration
+    public void afterRegistration(BotSession botSession) {
+        System.out.println("Registered bot running state is: " + botSession.isRunning());
+    }
+
     @Override
-    public String getBotUsername() {
-
-        return config.getBotName();
-    }
-
     public String getBotToken() {
-
-        return config.getToken();
+        return this.token;
     }
+
+    @Override
+    public LongPollingUpdateConsumer getUpdatesConsumer() {
+        return this;
+    }
+
+    @Value("${bot.api-key}")
+    private String token;
+
+    private TelegramClient telegramClient;
+
+    @PostConstruct
+    public void init() {
+        this.telegramClient = new OkHttpTelegramClient(this.token);
+    }
+
+    private LocalMessages localMessages;
+
+    private final UserService userService;
+    private final CommandHandlerFactory commandHandlerFactory;
+    private final StateHandlerFactory stateHandlerFactory;
+    private final CallbackHandlerFactory callbackHandlerFactory;
+
 }

@@ -18,10 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RegisterHandler implements CommandHandler {
 
-    private final UserService userService;
-    private final CountryFlagUtil countryFlagUtil;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
 
@@ -38,4 +34,8 @@ public class RegisterHandler implements CommandHandler {
             telegramUtils.sendMessage(chatId, localMessages.get("message.already_registered") + list);
         }
     }
+
+    private final UserService userService;
+    private final CountryFlagUtil countryFlagUtil;
+    private final TelegramUtils telegramUtils;
 }

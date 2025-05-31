@@ -21,21 +21,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CommandHandlerFactory {
 
-    private final ObjectFactory<RegisterHandler> registerOF;
-    private final ObjectFactory<ProfileHandler> profileOF;
-    private final ObjectFactory<NewWordHandler> newWordOF;
-    private final ObjectFactory<LocalizationHandler> localizationOF;
-    private final ObjectFactory<AlphabetHandler> alphabetOF;
-    private final ObjectFactory<ConversationHandler> conversationOF;
-    private final ObjectFactory<WritingSentenceHandler> writingSentenceOF;
-    private final ObjectFactory<CancelHandler> cancelOF;
-    private final ObjectFactory<TrainHandler> trainOF;
-    private final ObjectFactory<LanguageByCountryHandler> languageByCountryOF;
-
-    private final ObjectFactory<OpenAIHandler> openAIOF;
-
     public CommandHandler getHandler(MenuEnum menuEnum) {
-
         return switch (menuEnum) {
             case REGISTER -> registerOF.getObject();
             case PROFILE -> profileOF.getObject();
@@ -51,4 +37,16 @@ public class CommandHandlerFactory {
             default -> openAIOF.getObject();
         };
     }
+
+    private final ObjectFactory<RegisterHandler> registerOF;
+    private final ObjectFactory<ProfileHandler> profileOF;
+    private final ObjectFactory<NewWordHandler> newWordOF;
+    private final ObjectFactory<LocalizationHandler> localizationOF;
+    private final ObjectFactory<AlphabetHandler> alphabetOF;
+    private final ObjectFactory<ConversationHandler> conversationOF;
+    private final ObjectFactory<WritingSentenceHandler> writingSentenceOF;
+    private final ObjectFactory<CancelHandler> cancelOF;
+    private final ObjectFactory<TrainHandler> trainOF;
+    private final ObjectFactory<LanguageByCountryHandler> languageByCountryOF;
+    private final ObjectFactory<OpenAIHandler> openAIOF;
 }

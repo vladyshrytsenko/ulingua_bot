@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ulingua-postgres-dev
+    environment:
+      POSTGRES_DB: ulingua-dev-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ab3dRfGh7J9K
+    ports:
+      - "5432:5432"
+    volumes:
+      - ulingua-postgres-dev-data:/var/lib/postgresql/data
+
+volumes:
+  ulingua-postgres-dev-data:

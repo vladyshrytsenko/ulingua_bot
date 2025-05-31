@@ -31,26 +31,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "chat_id")
     private Long chatId;
-
-    @Column(name = "firstname")
-    private String firstName;
-
-    @Column(name = "lastname")
-    private String lastName;
-
-    @Column(name = "username")
+    private String firstname;
+    private String lastname;
     private String username;
-
-    @Column(name = "native_lang")
     private String nativeLang;
-
-    @Column(name = "current_lang")
     private String currentLang;
-
-    @Column(name = "localization")
     private String localization;
+    private byte dailyLimit;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

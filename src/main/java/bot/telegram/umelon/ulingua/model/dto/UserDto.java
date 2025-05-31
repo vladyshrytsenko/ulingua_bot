@@ -20,8 +20,8 @@ public class UserDto {
 
     private Long id;
     private Long chatId;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     private String username;
     private String nativeLang;
     private String currentLang;
@@ -29,6 +29,7 @@ public class UserDto {
     private Set<LanguageDto> languages;
     private Set<WordDto> words;
     private Date createdAt;
+    private byte dailyLimit;
 
     public static UserDto toDto(User user) {
         if (user == null) {
@@ -52,8 +53,8 @@ public class UserDto {
         return UserDto.builder()
             .id(user.getId())
             .chatId(user.getChatId())
-            .firstName(user.getFirstName())
-            .lastName(user.getLastName())
+            .firstname(user.getFirstname())
+            .lastname(user.getLastname())
             .username(user.getUsername())
             .nativeLang(user.getNativeLang())
             .currentLang(user.getCurrentLang())
@@ -61,6 +62,7 @@ public class UserDto {
             .languages(languagesDto)
             .words(wordsDto)
             .createdAt(user.getCreatedAt())
+            .dailyLimit(user.getDailyLimit())
             .build();
     }
 
@@ -96,8 +98,8 @@ public class UserDto {
         return User.builder()
             .id(userDto.getId())
             .chatId(userDto.getChatId())
-            .firstName(userDto.getFirstName())
-            .lastName(userDto.getLastName())
+            .firstname(userDto.getFirstname())
+            .lastname(userDto.getLastname())
             .username(userDto.getUsername())
             .nativeLang(userDto.getNativeLang())
             .currentLang(userDto.getCurrentLang())
@@ -105,6 +107,7 @@ public class UserDto {
             .languages(languages)
             .words(words)
             .createdAt(userDto.getCreatedAt())
+            .dailyLimit(userDto.getDailyLimit())
             .build();
     }
 

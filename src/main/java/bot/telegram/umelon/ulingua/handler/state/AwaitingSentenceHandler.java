@@ -18,9 +18,6 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class AwaitingSentenceHandler implements StateHandler {
 
-    private final TelegramUtils telegramUtils;
-    private final OpenAIService openAIService;
-
     @Override
     public void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages) {
 
@@ -35,6 +32,8 @@ public class AwaitingSentenceHandler implements StateHandler {
                 new ButtonData(localMessages.get("button.discuss"), sentenceDiscuss, 1)
             );
         telegramUtils.sendInlineKeyboard(chatId, chatCompletion, buttons);
-
     }
+
+    private final TelegramUtils telegramUtils;
+    private final OpenAIService openAIService;
 }

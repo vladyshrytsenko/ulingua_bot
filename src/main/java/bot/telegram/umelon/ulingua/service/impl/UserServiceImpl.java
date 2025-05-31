@@ -3,9 +3,7 @@ package bot.telegram.umelon.ulingua.service.impl;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.entity.User;
-import bot.telegram.umelon.ulingua.model.entity.UserWord;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
-import bot.telegram.umelon.ulingua.repository.UserWordRepository;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,20 +21,6 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    private final UserRepository userRepository;
-    private final LanguageService languageService;
-    private final UserWordRepository userWordRepository;
-
-    private Map<Long, UserState> userStateMap = new HashMap<>();
-
-    public void setUserState(long chatId, UserState state) {
-        userStateMap.put(chatId, state);
-    }
-
-    public UserState getUserState(long chatId) {
-        return userStateMap.getOrDefault(chatId, null);
-    }
 
     @Override
     public UserDto getById(long id) {
@@ -58,8 +42,8 @@ public class UserServiceImpl implements UserService {
         if (existingUserOpt.isPresent()) {
             User existingUser = existingUserOpt.get();
 
-            existingUser.setFirstName(user.getFirstName());
-            existingUser.setLastName(user.getLastName());
+            existingUser.setFirstname(user.getFirstname());
+            existingUser.setLastname(user.getLastname());
             existingUser.setUsername(user.getUsername());
 
             if (user.getNativeLang() != null) {
@@ -85,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto addUserLanguage(long chatId, long languageId) {
+    public void addUserLanguage(long chatId, long languageId) {
         LanguageDto foundLanguageDto = languageService.getById(languageId);
 
         UserDto currentUser = getByChatId(chatId);
@@ -96,12 +80,12 @@ public class UserServiceImpl implements UserService {
         currentUser.setCurrentLang(foundLanguageDto.getCountryCode());
 
         User currentUserEntity = UserDto.toEntity(currentUser);
-        return save(currentUserEntity);
+        save(currentUserEntity);
     }
 
     @Override
     @Transactional
-    public UserDto removeUserLanguage(long chatId, long languageId) {
+    public void removeUserLanguage(long chatId, long languageId) {
         LanguageDto foundLanguageDto = languageService.getById(languageId);
 
         UserDto currentUser = getByChatId(chatId);
@@ -114,46 +98,52 @@ public class UserServiceImpl implements UserService {
         }
 
         User currentUserEntity = UserDto.toEntity(currentUser);
-        return save(currentUserEntity);
+        save(currentUserEntity);
     }
 
     @Override
-    public UserDto setUserCurrentLanguage(long chatId, String langCode) {
+    public void setUserCurrentLanguage(long chatId, String langCode) {
         Optional<User> userOptional = userRepository.findByChatId(chatId);
         if (userOptional.isPresent()) {
-            bot.telegram.umelon.ulingua.model.entity.User user = userOptional.get();
-
+            User user = userOptional.get();
             user.setCurrentLang(langCode);
-            User updated = userRepository.save(user);
-            return UserDto.toDto(updated);
+
+            userRepository.save(user);
         }
-        return null;
     }
 
     @Override
-    public UserDto setBotLanguage(long chatId, String langCode) {
+    public void setBotLanguage(long chatId, String langCode) {
         Optional<User> userOptional = userRepository.findByChatId(chatId);
         if (userOptional.isPresent()) {
-            bot.telegram.umelon.ulingua.model.entity.User user = userOptional.get();
-
+            User user = userOptional.get();
             user.setLocalization(langCode);
-            User updated = userRepository.save(user);
-            return UserDto.toDto(updated);
+
+            userRepository.save(user);
         }
-        return null;
     }
 
     @Override
-    @Transactional
-    public void addWordForUser(long userId, long wordId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    public void setDailyLimit(long chatId, byte dailyLimit) {
+        Optional<User> userOptional = userRepository.findByChatId(chatId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setDailyLimit(dailyLimit);
 
-        UserWord userWord = UserWord.builder()
-            .userId(userId)
-            .wordId(wordId)
-            .build();
-
-        userWordRepository.save(userWord);
+            userRepository.save(user);
+        }
     }
+
+    public UserState getUserState(long chatId) {
+        return userStateMap.getOrDefault(chatId, null);
+    }
+
+    public void setUserState(long chatId, UserState state) {
+        userStateMap.put(chatId, state);
+    }
+
+    private final UserRepository userRepository;
+    private final LanguageService languageService;
+
+    private final Map<Long, UserState> userStateMap = new HashMap<>();
 }

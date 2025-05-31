@@ -6,17 +6,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.Setter;
 
 @Entity(name = "words")
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -30,10 +28,7 @@ public class Word {
     @JoinColumn(name = "lang_id", nullable = false)
     private Language language;
 
-    @Column(name = "original", nullable = false, length = 64)
+    @Column(nullable = false, length = 64)
     private String original;
-
-//    @ManyToMany(mappedBy = "words")
-//    private List<User> users;
 
 }

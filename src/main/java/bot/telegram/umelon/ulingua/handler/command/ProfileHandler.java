@@ -20,10 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfileHandler implements CommandHandler {
 
-    private final UserService userService;
-    private final LanguageService languageService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
         userService.setUserState(chatId, null);
@@ -60,4 +56,8 @@ public class ProfileHandler implements CommandHandler {
         }
         return buttons;
     }
+
+    private final UserService userService;
+    private final LanguageService languageService;
+    private final TelegramUtils telegramUtils;
 }

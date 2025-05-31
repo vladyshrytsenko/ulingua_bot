@@ -17,11 +17,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 @RequiredArgsConstructor
 public class AddNativeLangCallbackHandler implements CallbackHandler {
 
-    private final CountryFlagUtil countryFlagUtil;
-    private final LanguageService languageService;
-    private final UserService userService;
-    private final TelegramUtils telegramUtils;
-
     @Override
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
 
@@ -37,8 +32,8 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
             org.telegram.telegrambots.meta.api.objects.User from = callbackQuery.getFrom();
             User user = User.builder()
                 .chatId(callbackChatId)
-                .firstName(from.getFirstName())
-                .lastName(from.getLastName())
+                .firstname(from.getFirstName())
+                .lastname(from.getLastName())
                 .username(from.getUserName())
                 .nativeLang(foundLanguage.getCountryCode())
                 .localization(foundLanguage.getCountryCode())
@@ -55,4 +50,9 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
             );
         }
     }
+
+    private final CountryFlagUtil countryFlagUtil;
+    private final LanguageService languageService;
+    private final UserService userService;
+    private final TelegramUtils telegramUtils;
 }

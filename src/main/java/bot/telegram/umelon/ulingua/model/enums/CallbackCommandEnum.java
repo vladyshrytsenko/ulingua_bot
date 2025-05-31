@@ -10,7 +10,15 @@ public enum CallbackCommandEnum {
     ADD_NATIVE_LANG("_add_native_lang"),
     SET_CURRENT_LANG("_set_current_lang"),
     CHANGE_BOT_LANG("_change_bot_lang"),
-    WRITING_SENTENCE_DISCUSS("_writing_sentence_discuss");
+    WRITING_SENTENCE_DISCUSS("_writing_sentence_discuss"),
+    CHANGE_DAILY_LIMIT("_change_daily_limit"),
+    LIMIT_IS_FIVE("5_change_daily_limit"),
+    LIMIT_IS_TEN("10_change_daily_limit"),
+    LIMIT_IS_FIFTEEN("15_change_daily_limit"),
+    RANDOM_NEW_WORD("_random_new_word"),
+    RANDOM_NEW_WORD_ALREADY_KNOW("_random_new_word_already_know"),
+    RANDOM_NEW_WORD_FOR_STUDY("_random_new_word_for_study"),
+    RANDOM_NEW_WORD_NOT_INTERESTING("_random_new_word_not_interesting");
 
     private final String value;
     private String customDescription;
