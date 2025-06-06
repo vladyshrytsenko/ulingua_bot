@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:latest
     container_name: ulingua-postgres-dev
     environment:
       POSTGRES_DB: ulingua-dev-db

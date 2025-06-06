@@ -6,9 +6,10 @@ import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
 import bot.telegram.umelon.ulingua.model.entity.Word;
+import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
 import bot.telegram.umelon.ulingua.service.LanguageService;
-import bot.telegram.umelon.ulingua.service.OpenAIService;
+import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.service.UserWordService;
 import bot.telegram.umelon.ulingua.service.WordService;
@@ -35,7 +36,7 @@ public class AwaitingNewWordHandler implements StateHandler {
             .map(LanguageDto::getUnicode)
             .collect(Collectors.joining(","));
 
-        String chatCompletion = this.openAIService.getChatCompletion(format(
+        String chatCompletion = this.generativeAiService.chatCompletion(AiProvider.GEMINI, format(
             "Provide information about the word '%s' in %s language. Answer in JSON format with the following fields: " +
             "'exists' (yes or no). If 'no' then in any language from %s. But if 'yes', then add the 'language_code' " +
             "(2 digits in capital letters)'.", word, currentUser.getCurrentLang(), langList
@@ -53,7 +54,8 @@ public class AwaitingNewWordHandler implements StateHandler {
 
             String languageCode;
             if (wordInfoJsonNode.get("language_code") == null) {
-                languageCode = this.openAIService.getChatCompletion(
+                languageCode = this.generativeAiService.chatCompletion(
+                    AiProvider.GEMINI,
                     format("'language_code' was empty, although such a word exists. Generate again choosing one " +
                            "from this list %s in which this word exists. Then output only the code (2 characters).", langList
                     )
@@ -89,7 +91,7 @@ public class AwaitingNewWordHandler implements StateHandler {
     private final WordService wordService;
     private final LanguageService languageService;
     private final TelegramUtils telegramUtils;
-    private final OpenAIService openAIService;
+    private final GenerativeAiService generativeAiService;
     private final ObjectMapper objectMapper;
     private final UserWordService userWordService;
 }
