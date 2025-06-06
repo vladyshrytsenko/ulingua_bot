@@ -7,10 +7,11 @@ import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
 import bot.telegram.umelon.ulingua.model.entity.Word;
+import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
 import bot.telegram.umelon.ulingua.service.LanguageService;
-import bot.telegram.umelon.ulingua.service.OpenAIService;
+import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.service.UserWordService;
 import bot.telegram.umelon.ulingua.service.WordService;
@@ -43,7 +44,8 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
             if (this.userWordService.isDailyLimitExceeded(chatId, dailyLimit)) {
                 this.telegramUtils.sendMessage(chatId, "Daily limit exceeded!");
             } else {
-                String chatCompletion = this.openAIService.getChatCompletion(format(
+                String chatCompletion = this.generativeAiService.chatCompletion(
+                    AiProvider.GEMINI, format(
                     "I am learning %s. Give me exactly one common everyday word to learn, " +
                     "with no additional context or explanation. Answer with only one word, nothing else.",
                     currentUser.getCurrentLang()
@@ -144,7 +146,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
 
     private final UserService userService;
     private final TelegramUtils telegramUtils;
-    private final OpenAIService openAIService;
+    private final GenerativeAiService generativeAiService;
     private final UserWordService userWordService;
     private final WordService wordService;
     private final LanguageService languageService;

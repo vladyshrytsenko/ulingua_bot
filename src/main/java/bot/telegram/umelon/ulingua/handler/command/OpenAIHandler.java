@@ -2,7 +2,8 @@ package bot.telegram.umelon.ulingua.handler.command;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
-import bot.telegram.umelon.ulingua.service.OpenAIService;
+import bot.telegram.umelon.ulingua.model.enums.AiProvider;
+import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,10 @@ public class OpenAIHandler implements CommandHandler {
 
     @Override
     public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
-        String response = openAIService.getChatCompletion(messageText);
+        String response = generativeAiService.chatCompletion(AiProvider.GEMINI, messageText);
         telegramUtils.sendMessage(chatId, response);
     }
 
-    private final OpenAIService openAIService;
+    private final GenerativeAiService generativeAiService;
     private final TelegramUtils telegramUtils;
 }
