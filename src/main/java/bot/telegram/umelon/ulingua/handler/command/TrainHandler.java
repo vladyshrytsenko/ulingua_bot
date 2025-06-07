@@ -46,6 +46,7 @@ public class TrainHandler implements CommandHandler {
                 Обмеження на сьогодні: %d
                 """, sb, currentUserDto.getDailyLimit());
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
+
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendInlineKeyboard(userId, trainInfo, buttons);
         }

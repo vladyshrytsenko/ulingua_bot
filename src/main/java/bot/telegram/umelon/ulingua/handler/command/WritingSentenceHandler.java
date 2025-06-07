@@ -30,6 +30,8 @@ public class WritingSentenceHandler implements CommandHandler {
             LanguageDto languageDto = languageService.getByCountryCode(currentUserDto.getCurrentLang());
             message = String.format(localMessages.get("message.conversation.sentence"), languageDto.getUnicode());
             userService.setUserState(userId, UserState.AWAITING_SENTENCE);
+
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendMessage(userId, message);
         }
     }

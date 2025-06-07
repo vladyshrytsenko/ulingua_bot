@@ -30,6 +30,8 @@ public class NewWordHandler implements CommandHandler {
             LanguageDto languageDto = languageService.getByCountryCode(currentUserDto.getCurrentLang());
             message = String.format(localMessages.get("message.enter_new_word"), languageDto.getUnicode());
             userService.setUserState(userId, UserState.AWAITING_NEW_WORD);
+
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendMessage(userId, message);
         }
     }

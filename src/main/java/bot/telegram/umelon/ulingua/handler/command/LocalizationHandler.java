@@ -21,6 +21,7 @@ public class LocalizationHandler implements CommandHandler {
             String message = localMessages.get("message.register_required");
             telegramUtils.sendMessage(userId, message);
         } else {
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendUserLanguagesInlineKeyboard(
                 userId, localMessages.get("message.select_bot_language"), CallbackCommandEnum.CHANGE_BOT_LANG
             );

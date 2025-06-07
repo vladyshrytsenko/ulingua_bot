@@ -31,6 +31,8 @@ public class RegisterHandler implements CommandHandler {
                 String langFlag = countryFlagUtil.getFlagByCountry(languageDto.getCountryCode());
                 list.add(langFlag);
             });
+
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendMessage(userId, localMessages.get("message.already_registered") + list);
         }
     }

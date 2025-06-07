@@ -30,6 +30,8 @@ public class ConversationHandler implements CommandHandler {
             LanguageDto languageDto = languageService.getByCountryCode(currentUserDto.getCurrentLang());
             message = String.format(localMessages.get("message.conversation.topic"), languageDto.getUnicode());
             userService.setUserState(userId, UserState.AWAITING_CONVERSATION);
+
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendMessage(userId, message);
         }
     }
