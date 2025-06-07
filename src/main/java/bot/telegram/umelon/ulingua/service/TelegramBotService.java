@@ -50,7 +50,6 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
             add(new BotCommand("/localization", localMessages.get("menu.localization")));
             add(new BotCommand("/alphabet", "Alphabet"));
             add(new BotCommand("/conversation_chat", "Free-topic communication with AI"));
-            add(new BotCommand("/cancel", "Cancel the current operation"));
         }};
 
         try {

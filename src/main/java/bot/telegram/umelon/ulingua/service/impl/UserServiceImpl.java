@@ -46,9 +46,6 @@ public class UserServiceImpl implements UserService {
             if (user.getCurrentLang() != null) {
                 existingUser.setCurrentLang(user.getCurrentLang());
             }
-            if (user.getWords() != null) {
-                existingUser.setWords(user.getWords());
-            }
             if (user.getLanguages() != null) {
                 existingUser.setLanguages(user.getLanguages());
             }

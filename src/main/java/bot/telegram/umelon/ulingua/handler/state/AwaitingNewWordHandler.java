@@ -7,6 +7,7 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
 import bot.telegram.umelon.ulingua.model.entity.Word;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
+import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
@@ -37,9 +38,14 @@ public class AwaitingNewWordHandler implements StateHandler {
             .collect(Collectors.joining(","));
 
         String chatCompletion = this.generativeAiService.chatCompletion(AiProvider.GEMINI, format(
-            "Provide information about the word '%s' in %s language. Answer in JSON format with the following fields: " +
-            "'exists' (yes or no). If 'no' then in any language from %s. But if 'yes', then add the 'language_code' " +
-            "(2 digits in capital letters)'.", word, currentUser.getCurrentLang(), langList
+            "Provide information about the word '%s' in %s language. " +
+            "Respond ONLY with a valid minified JSON object (no extra formatting, no ```json, no trailing spaces/newlines). " +
+            "Required fields: 'exists' (yes/no). If 'exists':'yes', add 'language_code' (2 uppercase letters). " +
+            "Example of valid response: {\"exists\":\"yes\",\"language_code\":\"ES\"} " +
+            "Important: Do NOT include any other text, symbols, or formatting outside the JSON object.",
+            word,
+            currentUser.getCurrentLang(),
+            langList
         ));
 
         JsonNode wordInfoJsonNode = null;
@@ -50,7 +56,11 @@ public class AwaitingNewWordHandler implements StateHandler {
         }
 
         if (wordInfoJsonNode.get("exists").textValue().equalsIgnoreCase("yes")) {
-            this.telegramUtils.sendMessage(userId, format(localMessages.get("message.adding_word_to_study_list"), messageText));
+            this.telegramUtils.sendMessage(
+                userId,
+                format(localMessages.get("message.adding_word_to_study_list"), messageText),
+                true
+            );
 
             String languageCode;
             if (wordInfoJsonNode.get("language_code") == null) {
@@ -72,19 +82,19 @@ public class AwaitingNewWordHandler implements StateHandler {
                 .original(word)
                 .build();
             WordDto createdWord = this.wordService.create(newWord);
-            // todo: needs to be checked what the Progress it should be
+
             this.userWordService.addWordForUser(
                 currentUser.getId(),
                 createdWord.getId(),
                 UserWordProgress.STUDYING
             );
 
-            this.telegramUtils.sendMessage(userId, localMessages.get("message.done"));
+            this.telegramUtils.sendMessage(userId, localMessages.get("message.done"), true);
         } else {
-            this.telegramUtils.sendMessage(userId, localMessages.get("message.word_not_exist"));
+            this.telegramUtils.sendMessage(userId, localMessages.get("message.word_not_exist"), true);
         }
 
-        this.userService.setUserState(userId, null);
+        this.userService.setUserState(userId, UserState.AWAITING_NEW_WORD);
     }
 
     private final UserService userService;

@@ -26,7 +26,6 @@ public class UserDto {
     private String currentLang;
     private String localization;
     private Set<LanguageDto> languages;
-    private Set<WordDto> words;
     private Date createdAt;
     private byte dailyLimit;
 
@@ -42,13 +41,6 @@ public class UserDto {
                 .collect(Collectors.toSet());
         }
 
-        Set<WordDto> wordsDto = new HashSet<>();
-        if (user.getWords() != null) {
-            wordsDto = user.getWords().stream()
-                .map(WordDto::toDto)
-                .collect(Collectors.toSet());
-        }
-
         return UserDto.builder()
             .id(user.getId())
             .firstname(user.getFirstname())
@@ -58,7 +50,6 @@ public class UserDto {
             .currentLang(user.getCurrentLang())
             .localization(user.getLocalization())
             .languages(languagesDto)
-            .words(wordsDto)
             .createdAt(user.getCreatedAt())
             .dailyLimit(user.getDailyLimit())
             .build();
@@ -86,13 +77,6 @@ public class UserDto {
                 .collect(Collectors.toSet());
         }
 
-        Set<Word> words = new HashSet<>();
-        if (userDto.getWords() != null) {
-            words = userDto.getWords().stream()
-                .map(WordDto::toEntity)
-                .collect(Collectors.toSet());
-        }
-
         return User.builder()
             .id(userDto.getId())
             .firstname(userDto.getFirstname())
@@ -102,7 +86,6 @@ public class UserDto {
             .currentLang(userDto.getCurrentLang())
             .localization(userDto.getLocalization())
             .languages(languages)
-            .words(words)
             .createdAt(userDto.getCreatedAt())
             .dailyLimit(userDto.getDailyLimit())
             .build();

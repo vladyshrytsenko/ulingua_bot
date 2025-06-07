@@ -15,7 +15,7 @@ public enum MenuEnum {
     WRITING_SENTENCE("/writing_sentence"),
     TRAIN("/train"),
     LANGUAGE_BY_COUNTRY("/language_by_country"),
-    CANCEL("/cancel");
+    CANCEL("❌ Cancel");
 
     private final String value;
 

@@ -17,7 +17,7 @@ public class CancelHandler implements CommandHandler {
         userService.setUserState(userId, null);
 
         telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-        telegramUtils.sendMessage(userId, localMessages.get("message.command_canceled"));
+        telegramUtils.sendMessage(userId, localMessages.get("message.command_canceled"), false);
     }
 
     private final TelegramUtils telegramUtils;

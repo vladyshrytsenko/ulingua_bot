@@ -15,9 +15,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
@@ -33,34 +34,31 @@ import static java.lang.Math.*;
 @RequiredArgsConstructor
 public class TelegramUtils {
 
-    public void sendMessage(long userId, String text) {
+    public void sendMessage(long userId, String text, boolean isCancellable) {
         SendMessage sendMessage = SendMessage.builder()
             .chatId(userId)
             .text(text)
             .build();
 
+        if (isCancellable) {
+            ReplyKeyboardMarkup replyKeyboardMarkup = ReplyKeyboardMarkup.builder()
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(true)
+                .build();
+
+            List<KeyboardRow> keyboardRows = new ArrayList<>();
+            KeyboardRow row = new KeyboardRow();
+            row.add("❌ Cancel");
+            keyboardRows.add(row);
+
+            replyKeyboardMarkup.setKeyboard(keyboardRows);
+            sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        }
+
         try {
             this.telegramClient.execute(sendMessage);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void removeKeyBoard(long userId, String text) {
-        SendMessage message = SendMessage.builder()
-            .chatId(userId)
-            .text("Removing keyboard...")
-            .build();
-
-        ReplyKeyboardRemove replyKeyboardRemove = ReplyKeyboardRemove.builder()
-            .removeKeyboard(true)
-            .build();
-        message.setReplyMarkup(replyKeyboardRemove);
-
-        try {
-            this.telegramClient.execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
         }
     }
 

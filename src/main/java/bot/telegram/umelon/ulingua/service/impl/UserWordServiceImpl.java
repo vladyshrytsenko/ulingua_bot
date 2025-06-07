@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,11 @@ public class UserWordServiceImpl implements UserWordService {
             .build();
 
         this.userWordRepository.save(userWord);
+    }
+
+    @Override
+    public List<UserWord> findAll(long userId) {
+        return this.userWordRepository.findByUserId(userId);
     }
 
     @Override

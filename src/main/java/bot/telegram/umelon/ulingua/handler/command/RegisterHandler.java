@@ -33,7 +33,7 @@ public class RegisterHandler implements CommandHandler {
             });
 
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-            telegramUtils.sendMessage(userId, localMessages.get("message.already_registered") + list);
+            telegramUtils.sendMessage(userId, localMessages.get("message.already_registered") + list, false);
         }
     }
 

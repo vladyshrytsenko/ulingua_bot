@@ -20,11 +20,12 @@ public class AwaitingConversationHandler implements StateHandler {
 
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI, format(
-            "Since I am studying %s language, I want to talk to you about this topic: %s. Please, give a short answer in 2-3 sentences in %s.",
+            "Since I am studying %s language, I want to talk to you about this topic: %s. " +
+            "Please, give a short answer in 2-3 sentences in %s.",
             currentUser.getCurrentLang(), messageText, currentUser.getCurrentLang()
         ));
 
-        telegramUtils.sendMessage(userId, chatCompletion);
+        telegramUtils.sendMessage(userId, chatCompletion, true);
     }
 
     private final TelegramUtils telegramUtils;
