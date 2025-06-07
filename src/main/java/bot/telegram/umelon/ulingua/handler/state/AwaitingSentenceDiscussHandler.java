@@ -17,7 +17,7 @@ import static java.lang.String.format;
 public class AwaitingSentenceDiscussHandler implements StateHandler {
 
     @Override
-    public void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages) {
+    public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
 
         String previousResponse = CallbackCommandEnum.WRITING_SENTENCE_DISCUSS.getDescription();
         if (previousResponse != null) {
@@ -27,7 +27,7 @@ public class AwaitingSentenceDiscussHandler implements StateHandler {
                 previousResponse, messageText, currentUser.getNativeLang()
             ));
 
-            telegramUtils.sendMessage(chatId, discussionPrompt);
+            telegramUtils.sendMessage(userId, discussionPrompt);
         }
     }
 

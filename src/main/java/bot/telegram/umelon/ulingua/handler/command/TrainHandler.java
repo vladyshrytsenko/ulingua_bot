@@ -23,13 +23,13 @@ import java.util.Map;
 public class TrainHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
-        userService.setUserState(chatId, null);
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
+        userService.setUserState(userId, null);
 
-        UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
+        UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(chatId, message);
+            telegramUtils.sendMessage(userId, message);
         } else {
             Map<LanguageDto, Integer> wordCountByLanguage = new HashMap<>();
             currentUserDto.getWords().forEach(word -> {
@@ -46,7 +46,8 @@ public class TrainHandler implements CommandHandler {
                 Обмеження на сьогодні: %d
                 """, sb, currentUserDto.getDailyLimit());
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
-            telegramUtils.sendInlineKeyboard(chatId, trainInfo, buttons);
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+            telegramUtils.sendInlineKeyboard(userId, trainInfo, buttons);
         }
     }
 

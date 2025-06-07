@@ -19,19 +19,19 @@ import java.util.List;
 public class RegisterHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
 
-        UserDto currentUserDto = userService.getByChatId(chatId);
+        UserDto currentUserDto = userService.getById(userId);
         if (currentUserDto == null) {
             String text = localMessages.get("message.select_native_language");
-            telegramUtils.sendLanguagesInlineKeyboard(chatId, text, CallbackCommandEnum.ADD_NATIVE_LANG);
+            telegramUtils.sendLanguagesInlineKeyboard(userId, text, CallbackCommandEnum.ADD_NATIVE_LANG);
         } else {
             List<String> list = new ArrayList<>();
             currentUserDto.getLanguages().forEach(languageDto -> {
                 String langFlag = countryFlagUtil.getFlagByCountry(languageDto.getCountryCode());
                 list.add(langFlag);
             });
-            telegramUtils.sendMessage(chatId, localMessages.get("message.already_registered") + list);
+            telegramUtils.sendMessage(userId, localMessages.get("message.already_registered") + list);
         }
     }
 

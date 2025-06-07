@@ -20,7 +20,7 @@ import static java.lang.String.format;
 public class AwaitingSentenceHandler implements StateHandler {
 
     @Override
-    public void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages) {
+    public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
 
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI, format(
@@ -33,7 +33,7 @@ public class AwaitingSentenceHandler implements StateHandler {
         List<ButtonData> buttons = List.of(
                 new ButtonData(localMessages.get("button.discuss"), sentenceDiscuss, 1)
             );
-        telegramUtils.sendInlineKeyboard(chatId, chatCompletion, buttons);
+        telegramUtils.sendInlineKeyboard(userId, chatCompletion, buttons);
     }
 
     private final TelegramUtils telegramUtils;

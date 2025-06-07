@@ -23,23 +23,23 @@ import static java.lang.String.*;
 public class AlphabetHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
-        userService.setUserState(chatId, null);
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
+        userService.setUserState(userId, null);
 
-        UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
+        UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(chatId, message);
+            telegramUtils.sendMessage(userId, message);
         } else {
             if (Objects.equals(currentUserDto.getCurrentLang(), CountryCodeEnum.CN.name())) {
-                telegramUtils.sendMessage(chatId, "The Chinese language doesn't have an alphabet, but uses a hieroglyphic system instead.");
+                telegramUtils.sendMessage(userId, "The Chinese language doesn't have an alphabet, but uses a hieroglyphic system instead.");
             } else {
 
                 LanguageDto byCountryCode = languageService.getByCountryCode(currentUserDto.getCurrentLang());
                 Locale locale = LocaleUtils.getLocale(currentUserDto.getCurrentLang());
                 String alphabet = languageService.getAlphabet(locale);
 
-                telegramUtils.sendMessage(chatId, format(localMessages.get("message.alphabet_info"), byCountryCode.getUnicode(), alphabet));
+                telegramUtils.sendMessage(userId, format(localMessages.get("message.alphabet_info"), byCountryCode.getUnicode(), alphabet));
             }
         }
     }

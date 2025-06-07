@@ -31,12 +31,13 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
 
             org.telegram.telegrambots.meta.api.objects.User from = callbackQuery.getFrom();
             User user = User.builder()
-                .chatId(callbackChatId)
+                .id(callbackChatId)
                 .firstname(from.getFirstName())
                 .lastname(from.getLastName())
                 .username(from.getUserName())
                 .nativeLang(foundLanguage.getCountryCode())
                 .localization(foundLanguage.getCountryCode())
+                .dailyLimit((byte) 5)
                 .build();
 
             String text = String.format(

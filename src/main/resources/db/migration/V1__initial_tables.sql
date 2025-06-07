@@ -1,7 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    chat_id BIGINT,
     firstname VARCHAR(255),
     lastname VARCHAR(255),
     username VARCHAR(255),
@@ -9,9 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     current_lang VARCHAR(10),
     localization VARCHAR(10),
     created_at DATE NOT NULL DEFAULT CURRENT_DATE,
-    daily_limit SMALLINT NOT NULL,
-
-    CONSTRAINT unique_chat_id UNIQUE (chat_id)
+    daily_limit SMALLINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS languages (

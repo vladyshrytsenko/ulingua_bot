@@ -15,19 +15,19 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class LanguageByCountryHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
-        userService.setUserState(chatId, null);
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
+        userService.setUserState(userId, null);
 
         String message;
-        UserDto currentUserDto = this.userService.getByChatId(update.getMessage().getChat().getId());
+        UserDto currentUserDto = this.userService.getById(update.getMessage().getChat().getId());
 
         if (currentUserDto == null) {
             message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(chatId, message);
+            telegramUtils.sendMessage(userId, message);
         } else {
             message = localMessages.get("message.select_language_by_country");
-            userService.setUserState(chatId, UserState.AWAITING_COUNTRY);
-            telegramUtils.sendMessage(chatId, message);
+            userService.setUserState(userId, UserState.AWAITING_COUNTRY);
+            telegramUtils.sendMessage(userId, message);
         }
     }
 

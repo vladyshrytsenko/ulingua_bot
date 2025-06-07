@@ -5,5 +5,5 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 
 public interface StateHandler {
 
-    void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages);
+    void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages);
 }

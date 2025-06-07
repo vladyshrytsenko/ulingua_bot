@@ -21,13 +21,13 @@ import java.util.List;
 public class ProfileHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
-        userService.setUserState(chatId, null);
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
+        userService.setUserState(userId, null);
 
-        UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
+        UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(chatId, message);
+            telegramUtils.sendMessage(userId, message);
         } else {
             LanguageDto nativeLang = languageService.getByCountryCode(currentUserDto.getNativeLang());
             LanguageDto currentLang = languageService.getByCountryCode(currentUserDto.getCurrentLang());
@@ -37,7 +37,8 @@ public class ProfileHandler implements CommandHandler {
             String userInfo = String.format(localMessages.get("user.info"), currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
 
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
-            telegramUtils.sendInlineKeyboard(chatId, userInfo, buttons);
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+            telegramUtils.sendInlineKeyboard(userId, userInfo, buttons);
         }
     }
 

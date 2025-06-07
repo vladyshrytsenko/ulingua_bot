@@ -65,10 +65,10 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
         if (update.hasMessage() && update.getMessage().hasText()) {
 
             String messageText = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
+            long userId = update.getMessage().getChatId();
 
-            UserDto currentUser = userService.getByChatId(chatId);
-            UserState userState = userService.getUserState(chatId);
+            UserDto currentUser = userService.getById(userId);
+            UserState userState = userService.getUserState(userId);
 
             Locale locale = null;
             if (currentUser!= null) {
@@ -87,11 +87,11 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
 
             if (menuEnum != null) {
                 CommandHandler commandHandler = commandHandlerFactory.getHandler(menuEnum);
-                commandHandler.handle(chatId, messageText, update, localMessages);
+                commandHandler.handle(userId, messageText, update, localMessages);
             } else {
                 if (userState != null) {
                     StateHandler stateHandler = stateHandlerFactory.getHandler(userState);
-                    stateHandler.handle(chatId, messageText, currentUser, localMessages);
+                    stateHandler.handle(userId, messageText, currentUser, localMessages);
                 }
             }
         } else if (update.hasCallbackQuery()) {
