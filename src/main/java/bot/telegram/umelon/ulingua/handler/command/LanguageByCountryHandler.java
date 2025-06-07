@@ -27,6 +27,8 @@ public class LanguageByCountryHandler implements CommandHandler {
         } else {
             message = localMessages.get("message.select_language_by_country");
             userService.setUserState(userId, UserState.AWAITING_COUNTRY);
+
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendMessage(userId, message);
         }
     }

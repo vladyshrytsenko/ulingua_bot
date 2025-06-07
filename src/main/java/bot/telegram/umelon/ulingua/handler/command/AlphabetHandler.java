@@ -34,11 +34,11 @@ public class AlphabetHandler implements CommandHandler {
             if (Objects.equals(currentUserDto.getCurrentLang(), CountryCodeEnum.CN.name())) {
                 telegramUtils.sendMessage(userId, "The Chinese language doesn't have an alphabet, but uses a hieroglyphic system instead.");
             } else {
-
                 LanguageDto byCountryCode = languageService.getByCountryCode(currentUserDto.getCurrentLang());
                 Locale locale = LocaleUtils.getLocale(currentUserDto.getCurrentLang());
                 String alphabet = languageService.getAlphabet(locale);
 
+                telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
                 telegramUtils.sendMessage(userId, format(localMessages.get("message.alphabet_info"), byCountryCode.getUnicode(), alphabet));
             }
         }

@@ -31,12 +31,12 @@ public class ProfileHandler implements CommandHandler {
         } else {
             LanguageDto nativeLang = languageService.getByCountryCode(currentUserDto.getNativeLang());
             LanguageDto currentLang = languageService.getByCountryCode(currentUserDto.getCurrentLang());
+
             List<String> list = new ArrayList<>();
             currentUserDto.getLanguages().forEach(languageDto -> list.add(languageDto.getUnicode()));
-
             String userInfo = String.format(localMessages.get("user.info"), currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
-
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
+
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendInlineKeyboard(userId, userInfo, buttons);
         }
