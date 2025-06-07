@@ -25,14 +25,14 @@ public class NewWordHandler implements CommandHandler {
 
         if (currentUserDto == null) {
             message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message);
+            telegramUtils.sendMessage(userId, message, false);
         } else {
             LanguageDto languageDto = languageService.getByCountryCode(currentUserDto.getCurrentLang());
             message = String.format(localMessages.get("message.enter_new_word"), languageDto.getUnicode());
             userService.setUserState(userId, UserState.AWAITING_NEW_WORD);
 
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-            telegramUtils.sendMessage(userId, message);
+            telegramUtils.sendMessage(userId, message, true);
         }
     }
 

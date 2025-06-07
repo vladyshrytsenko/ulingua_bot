@@ -16,7 +16,7 @@ public class OpenAIHandler implements CommandHandler {
     @Override
     public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
         String response = generativeAiService.chatCompletion(AiProvider.GEMINI, messageText);
-        telegramUtils.sendMessage(userId, response);
+        telegramUtils.sendMessage(userId, response, false);
     }
 
     private final GenerativeAiService generativeAiService;

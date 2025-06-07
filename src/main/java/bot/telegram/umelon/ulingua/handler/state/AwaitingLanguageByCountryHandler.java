@@ -26,7 +26,7 @@ public class AwaitingLanguageByCountryHandler implements StateHandler {
             messageText, currentUser.getLocalization()
         ));
 
-        telegramUtils.sendMessage(userId, chatCompletion);
+        telegramUtils.sendMessage(userId, chatCompletion, false);
     }
 
     private final TelegramUtils telegramUtils;

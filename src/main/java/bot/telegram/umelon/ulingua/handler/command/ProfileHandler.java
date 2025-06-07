@@ -27,7 +27,7 @@ public class ProfileHandler implements CommandHandler {
         UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message);
+            telegramUtils.sendMessage(userId, message, false);
         } else {
             LanguageDto nativeLang = languageService.getByCountryCode(currentUserDto.getNativeLang());
             LanguageDto currentLang = languageService.getByCountryCode(currentUserDto.getCurrentLang());

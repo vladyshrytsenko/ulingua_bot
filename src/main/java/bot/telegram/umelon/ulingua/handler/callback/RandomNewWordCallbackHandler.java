@@ -41,7 +41,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
             byte dailyLimit = currentUser.getDailyLimit();
 
             if (this.userWordService.isDailyLimitExceeded(currentUser.getId(), dailyLimit)) {
-                this.telegramUtils.sendMessage(currentUser.getId(), "Daily limit exceeded!");
+                this.telegramUtils.sendMessage(currentUser.getId(), "Daily limit exceeded!", false);
             } else {
                 String chatCompletion = this.generativeAiService.chatCompletion(
                     AiProvider.GEMINI, format(

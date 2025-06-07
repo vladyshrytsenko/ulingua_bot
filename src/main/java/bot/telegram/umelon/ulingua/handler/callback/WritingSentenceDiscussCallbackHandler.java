@@ -17,7 +17,7 @@ public class WritingSentenceDiscussCallbackHandler implements CallbackHandler {
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
         Long callbackChatId = callbackQuery.getMessage().getChatId();
 
-        telegramUtils.sendMessage(callbackChatId, localMessages.get("message.conversation.add_comment"));
+        telegramUtils.sendMessage(callbackChatId, localMessages.get("message.conversation.add_comment"), false);
         userService.setUserState(callbackChatId, UserState.AWAITING_SENTENCE_DISCUSS);
     }
 

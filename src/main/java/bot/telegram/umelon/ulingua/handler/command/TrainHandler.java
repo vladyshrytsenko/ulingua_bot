@@ -5,15 +5,17 @@ import bot.telegram.umelon.ulingua.model.ButtonData;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
+import bot.telegram.umelon.ulingua.model.dto.WordDto;
+import bot.telegram.umelon.ulingua.model.entity.UserWord;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
-import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
+import bot.telegram.umelon.ulingua.service.UserWordService;
+import bot.telegram.umelon.ulingua.service.WordService;
 import bot.telegram.umelon.ulingua.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +31,17 @@ public class TrainHandler implements CommandHandler {
         UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message);
+            telegramUtils.sendMessage(userId, message, false);
         } else {
             Map<LanguageDto, Integer> wordCountByLanguage = new HashMap<>();
-            currentUserDto.getWords().forEach(word -> {
-                wordCountByLanguage.merge(word.getLanguage(), 1, Integer::sum);
+
+            List<UserWord> userWords = this.userWordService.findAll(userId);
+            userWords.forEach(uw -> {
+                Long wordId = uw.getWordId();
+                WordDto word = this.wordService.getById(wordId);
+                if (word != null) {
+                    wordCountByLanguage.merge(word.getLanguage(), 1, Integer::sum);
+                }
             });
 
             StringBuilder sb = new StringBuilder();
@@ -59,6 +67,8 @@ public class TrainHandler implements CommandHandler {
     }
 
     private final UserService userService;
+    private final UserWordService userWordService;
+    private final WordService wordService;
     private final TelegramUtils telegramUtils;
 }
 

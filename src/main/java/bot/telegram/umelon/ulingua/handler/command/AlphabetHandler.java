@@ -4,7 +4,6 @@ import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
-import bot.telegram.umelon.ulingua.model.enums.CountryCodeEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.utils.LocaleUtils;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Locale;
-import java.util.Objects;
 
 import static java.lang.String.*;
 
@@ -29,18 +27,14 @@ public class AlphabetHandler implements CommandHandler {
         UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message);
+            telegramUtils.sendMessage(userId, message, false);
         } else {
-            if (Objects.equals(currentUserDto.getCurrentLang(), CountryCodeEnum.CN.name())) {
-                telegramUtils.sendMessage(userId, "The Chinese language doesn't have an alphabet, but uses a hieroglyphic system instead.");
-            } else {
-                LanguageDto byCountryCode = languageService.getByCountryCode(currentUserDto.getCurrentLang());
-                Locale locale = LocaleUtils.getLocale(currentUserDto.getCurrentLang());
-                String alphabet = languageService.getAlphabet(locale);
+            LanguageDto byCountryCode = languageService.getByCountryCode(currentUserDto.getCurrentLang());
+            Locale locale = LocaleUtils.getLocale(currentUserDto.getCurrentLang());
+            String alphabet = languageService.getAlphabet(locale);
 
-                telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-                telegramUtils.sendMessage(userId, format(localMessages.get("message.alphabet_info"), byCountryCode.getUnicode(), alphabet));
-            }
+            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+            telegramUtils.sendMessage(userId, format(localMessages.get("message.alphabet_info"), byCountryCode.getUnicode(), alphabet), false);
         }
     }
 
