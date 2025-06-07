@@ -1,10 +1,8 @@
 package bot.telegram.umelon.ulingua.service.impl;
 
-import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.entity.UserWord;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
 import bot.telegram.umelon.ulingua.repository.UserWordRepository;
-import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.service.UserWordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,21 +14,15 @@ import java.time.LocalDateTime;
 public class UserWordServiceImpl implements UserWordService {
 
     @Override
-    public void addWordForUser(long chatId, long wordId, UserWordProgress progress) {
-        UserDto userById = this.userService.getByChatId(chatId);
-
+    public void addWordForUser(long userId, long wordId, UserWordProgress progress) {
         UserWord userWord = UserWord.builder()
-            .userId(chatId)
+            .userId(userId)
             .wordId(wordId)
             .progress(progress)
+            .createdAt(LocalDateTime.now())
             .build();
 
         this.userWordRepository.save(userWord);
-    }
-
-    @Override
-    public void removeWord(long chatId, long wordId) {
-
     }
 
     @Override
@@ -43,5 +35,4 @@ public class UserWordServiceImpl implements UserWordService {
     }
 
     private final UserWordRepository userWordRepository;
-    private final UserService userService;
 }

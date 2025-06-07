@@ -14,9 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class OpenAIHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
         String response = generativeAiService.chatCompletion(AiProvider.GEMINI, messageText);
-        telegramUtils.sendMessage(chatId, response);
+        telegramUtils.sendMessage(userId, response);
     }
 
     private final GenerativeAiService generativeAiService;

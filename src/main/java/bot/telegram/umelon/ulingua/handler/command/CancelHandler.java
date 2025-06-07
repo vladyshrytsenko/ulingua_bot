@@ -13,10 +13,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class CancelHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
 
-        userService.setUserState(chatId, null);
-        telegramUtils.sendMessage(chatId, localMessages.get("message.command_canceled"));
+        userService.setUserState(userId, null);
+        telegramUtils.sendMessage(userId, localMessages.get("message.command_canceled"));
     }
 
     private final TelegramUtils telegramUtils;

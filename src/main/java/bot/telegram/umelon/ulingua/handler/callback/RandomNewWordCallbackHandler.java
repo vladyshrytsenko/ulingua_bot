@@ -34,20 +34,20 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
         MaybeInaccessibleMessage message = callbackQuery.getMessage();
 
-        UserDto currentUser = this.userService.getByChatId(message.getChatId());
+        UserDto currentUser = this.userService.getById(message.getChatId());
         LanguageDto byCountryCode = this.languageService.getByCountryCode(currentUser.getCurrentLang());
 
         if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD.getValue())) {
-            Long chatId = currentUser.getChatId();
             byte dailyLimit = currentUser.getDailyLimit();
 
-            if (this.userWordService.isDailyLimitExceeded(chatId, dailyLimit)) {
-                this.telegramUtils.sendMessage(chatId, "Daily limit exceeded!");
+            if (this.userWordService.isDailyLimitExceeded(currentUser.getId(), dailyLimit)) {
+                this.telegramUtils.sendMessage(currentUser.getId(), "Daily limit exceeded!");
             } else {
                 String chatCompletion = this.generativeAiService.chatCompletion(
                     AiProvider.GEMINI, format(
-                    "I am learning %s. Give me exactly one common everyday word to learn, " +
-                    "with no additional context or explanation. Answer with only one word, nothing else.",
+                    "I am learning %s. Give me exactly one commonly used word in this language to learn, " +
+                    "with no additional context or explanation. Respond with only the word, " +
+                    "and do not include a period at the end.",
                     currentUser.getCurrentLang()
                 ));
 

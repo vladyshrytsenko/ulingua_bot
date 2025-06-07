@@ -16,7 +16,7 @@ import static java.lang.String.format;
 public class AwaitingConversationHandler implements StateHandler {
 
     @Override
-    public void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages) {
+    public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
 
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI, format(
@@ -24,7 +24,7 @@ public class AwaitingConversationHandler implements StateHandler {
             currentUser.getCurrentLang(), messageText, currentUser.getCurrentLang()
         ));
 
-        telegramUtils.sendMessage(chatId, chatCompletion);
+        telegramUtils.sendMessage(userId, chatCompletion);
     }
 
     private final TelegramUtils telegramUtils;

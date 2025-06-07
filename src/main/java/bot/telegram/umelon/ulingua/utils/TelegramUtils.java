@@ -33,9 +33,9 @@ import static java.lang.Math.*;
 @RequiredArgsConstructor
 public class TelegramUtils {
 
-    public void sendMessage(long chatId, String text) {
+    public void sendMessage(long userId, String text) {
         SendMessage sendMessage = SendMessage.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .build();
 
@@ -46,9 +46,9 @@ public class TelegramUtils {
         }
     }
 
-    public void removeKeyBoard(long chatId, String text) {
+    public void removeKeyBoard(long userId, String text) {
         SendMessage message = SendMessage.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text("Removing keyboard...")
             .build();
 
@@ -64,9 +64,9 @@ public class TelegramUtils {
         }
     }
 
-    public void sendEditMessageText(long chatId, long messageId, String text){
+    public void sendEditMessageText(long userId, long messageId, String text){
         EditMessageText message = EditMessageText.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .messageId(toIntExact(messageId))
             .build();
@@ -78,9 +78,9 @@ public class TelegramUtils {
         }
     }
 
-    public void sendDeleteMessageRequest(long chatId, long messageId) {
+    public void sendDeleteMessageRequest(long userId, long messageId) {
         DeleteMessage deleteMessage = DeleteMessage.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .messageId(toIntExact(messageId))
             .build();
 
@@ -91,9 +91,9 @@ public class TelegramUtils {
         }
     }
 
-    public void sendEditMessageTextWithInlineKeyboard(long chatId, long messageId, String text, CallbackCommandEnum command) {
+    public void sendEditMessageTextWithInlineKeyboard(long userId, long messageId, String text, CallbackCommandEnum command) {
         EditMessageText message = EditMessageText.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .messageId(Math.toIntExact(messageId))
             .build();
@@ -103,7 +103,7 @@ public class TelegramUtils {
         int buttonsPerRow = 3;
 
         List<LanguageDto> languages = languageService.findAll();
-        UserDto currentUser = userService.getByChatId(chatId);
+        UserDto currentUser = userService.getById(userId);
 
         if (currentUser != null) {
             languages.removeIf(
@@ -142,9 +142,9 @@ public class TelegramUtils {
         }
     }
 
-    public void sendLanguagesInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
+    public void sendLanguagesInlineKeyboard(Long userId, String text, CallbackCommandEnum command) {
         SendMessage message = SendMessage.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .build();
 
@@ -153,7 +153,7 @@ public class TelegramUtils {
 
         int buttonsPerRow = 3;
 
-        UserDto currentUser = userService.getByChatId(chatId);
+        UserDto currentUser = userService.getById(userId);
         if (currentUser != null) {
             languages.removeIf(
                 languageDto -> currentUser.getLanguages().stream()
@@ -194,9 +194,9 @@ public class TelegramUtils {
         }
     }
 
-    public void sendUserLanguagesInlineKeyboard(Long chatId, String text, CallbackCommandEnum command) {
+    public void sendUserLanguagesInlineKeyboard(Long userId, String text, CallbackCommandEnum command) {
         SendMessage message = SendMessage.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .build();
 
@@ -206,7 +206,7 @@ public class TelegramUtils {
         int buttonsPerRow = 3;
         List<InlineKeyboardButton> row = new ArrayList<>();
 
-        UserDto currentUser = userService.getByChatId(chatId);
+        UserDto currentUser = userService.getById(userId);
         Set<LanguageDto> userLanguages = currentUser.getLanguages();
         if (command.equals(CallbackCommandEnum.CHANGE_BOT_LANG)) {
             LanguageDto byCountryCode = languageService.getByCountryCode(currentUser.getNativeLang());
@@ -243,9 +243,9 @@ public class TelegramUtils {
         }
     }
 
-    public void sendEditMessageTextWithInlineKeyboard(Long chatId, long messageId, String text, List<ButtonData> buttonDataList) {
+    public void sendEditMessageTextWithInlineKeyboard(Long userId, long messageId, String text, List<ButtonData> buttonDataList) {
         EditMessageText message = EditMessageText.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .messageId(Math.toIntExact(messageId))
             .build();
@@ -275,13 +275,13 @@ public class TelegramUtils {
         try {
             this.telegramClient.execute(message);
         } catch (TelegramApiException e) {
-            this.sendMessageTextWithInlineKeyboard(chatId, text, buttonDataList);
+            this.sendMessageTextWithInlineKeyboard(userId, text, buttonDataList);
         }
     }
 
-    public void sendMessageTextWithInlineKeyboard(Long chatId, String text, List<ButtonData> buttonDataList) {
+    public void sendMessageTextWithInlineKeyboard(Long userId, String text, List<ButtonData> buttonDataList) {
         SendMessage message = SendMessage.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .build();
 
@@ -314,9 +314,9 @@ public class TelegramUtils {
         }
     }
 
-    public void sendInlineKeyboard(Long chatId, String text, List<ButtonData> buttonDataList) {
+    public void sendInlineKeyboard(Long userId, String text, List<ButtonData> buttonDataList) {
         SendMessage message = SendMessage.builder()
-            .chatId(chatId)
+            .chatId(userId)
             .text(text)
             .build();
 

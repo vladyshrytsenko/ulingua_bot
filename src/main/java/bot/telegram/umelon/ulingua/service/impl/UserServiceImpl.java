@@ -29,14 +29,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getByChatId(long id) {
-        User user = userRepository.findByChatId(id).orElse(null);
-        return user != null ? UserDto.toDto(user) : null;
-    }
-
-    @Override
     public UserDto save(User user) {
-        Optional<User> existingUserOpt = userRepository.findByChatId(user.getChatId());
+        Optional<User> existingUserOpt = userRepository.findById(user.getId());
         User savedUser;
 
         if (existingUserOpt.isPresent()) {
@@ -69,10 +63,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void addUserLanguage(long chatId, long languageId) {
+    public void addUserLanguage(long userId, long languageId) {
         LanguageDto foundLanguageDto = languageService.getById(languageId);
 
-        UserDto currentUser = getByChatId(chatId);
+        UserDto currentUser = getById(userId);
         if (currentUser.getLanguages() == null) {
             currentUser.setLanguages(new HashSet<>());
         }
@@ -85,10 +79,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void removeUserLanguage(long chatId, long languageId) {
+    public void removeUserLanguage(long userId, long languageId) {
         LanguageDto foundLanguageDto = languageService.getById(languageId);
 
-        UserDto currentUser = getByChatId(chatId);
+        UserDto currentUser = getById(userId);
         currentUser.getLanguages().remove(foundLanguageDto);
 
         if (foundLanguageDto.getCountryCode().equals(currentUser.getCurrentLang())) {
@@ -102,8 +96,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setUserCurrentLanguage(long chatId, String langCode) {
-        Optional<User> userOptional = userRepository.findByChatId(chatId);
+    public void setUserCurrentLanguage(long userId, String langCode) {
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setCurrentLang(langCode);
@@ -113,8 +107,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setBotLanguage(long chatId, String langCode) {
-        Optional<User> userOptional = userRepository.findByChatId(chatId);
+    public void setBotLanguage(long userId, String langCode) {
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setLocalization(langCode);
@@ -124,8 +118,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setDailyLimit(long chatId, byte dailyLimit) {
-        Optional<User> userOptional = userRepository.findByChatId(chatId);
+    public void setDailyLimit(long userId, byte dailyLimit) {
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setDailyLimit(dailyLimit);
@@ -134,12 +128,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public UserState getUserState(long chatId) {
-        return userStateMap.getOrDefault(chatId, null);
+    public UserState getUserState(long userId) {
+        return userStateMap.getOrDefault(userId, null);
     }
 
-    public void setUserState(long chatId, UserState state) {
-        userStateMap.put(chatId, state);
+    public void setUserState(long userId, UserState state) {
+        userStateMap.put(userId, state);
     }
 
     private final UserRepository userRepository;

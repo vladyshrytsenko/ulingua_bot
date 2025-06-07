@@ -29,7 +29,7 @@ import static java.lang.String.*;
 public class AwaitingNewWordHandler implements StateHandler {
 
     @Override
-    public void handle(long chatId, String messageText, UserDto currentUser, LocalMessages localMessages) {
+    public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
         String word = messageText.split(" ")[0];
 
         String langList = currentUser.getLanguages().stream()
@@ -50,7 +50,7 @@ public class AwaitingNewWordHandler implements StateHandler {
         }
 
         if (wordInfoJsonNode.get("exists").textValue().equalsIgnoreCase("yes")) {
-            this.telegramUtils.sendMessage(chatId, format(localMessages.get("message.adding_word_to_study_list"), messageText));
+            this.telegramUtils.sendMessage(userId, format(localMessages.get("message.adding_word_to_study_list"), messageText));
 
             String languageCode;
             if (wordInfoJsonNode.get("language_code") == null) {
@@ -79,12 +79,12 @@ public class AwaitingNewWordHandler implements StateHandler {
                 UserWordProgress.STUDYING
             );
 
-            this.telegramUtils.sendMessage(chatId, localMessages.get("message.done"));
+            this.telegramUtils.sendMessage(userId, localMessages.get("message.done"));
         } else {
-            this.telegramUtils.sendMessage(chatId, localMessages.get("message.word_not_exist"));
+            this.telegramUtils.sendMessage(userId, localMessages.get("message.word_not_exist"));
         }
 
-        this.userService.setUserState(chatId, null);
+        this.userService.setUserState(userId, null);
     }
 
     private final UserService userService;

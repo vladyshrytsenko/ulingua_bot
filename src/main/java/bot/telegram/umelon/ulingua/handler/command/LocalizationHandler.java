@@ -15,14 +15,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class LocalizationHandler implements CommandHandler {
 
     @Override
-    public void handle(long chatId, String messageText, Update update, LocalMessages localMessages) {
-        UserDto currentUserDto = userService.getByChatId(update.getMessage().getChatId());
+    public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
+        UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(chatId, message);
+            telegramUtils.sendMessage(userId, message);
         } else {
             telegramUtils.sendUserLanguagesInlineKeyboard(
-                chatId, localMessages.get("message.select_bot_language"), CallbackCommandEnum.CHANGE_BOT_LANG
+                userId, localMessages.get("message.select_bot_language"), CallbackCommandEnum.CHANGE_BOT_LANG
             );
         }
     }

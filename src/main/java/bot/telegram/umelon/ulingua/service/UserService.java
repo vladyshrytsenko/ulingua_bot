@@ -6,23 +6,21 @@ import bot.telegram.umelon.ulingua.model.enums.UserState;
 
 public interface UserService {
 
-    void setUserState(long chatId, UserState state);
+    void setUserState(long userId, UserState state);
 
-    UserState getUserState(long chatId);
+    UserState getUserState(long userId);
 
     UserDto getById(long id);
 
-    UserDto getByChatId(long id);
-
     UserDto save(User user);
 
-    void addUserLanguage(long chatId, long languageId);
+    void addUserLanguage(long userId, long languageId);
 
-    void removeUserLanguage(long chatId, long languageId);
+    void removeUserLanguage(long userId, long languageId);
 
-    void setUserCurrentLanguage(long chatId, String langCode);
+    void setUserCurrentLanguage(long userId, String langCode);
 
-    void setBotLanguage(long chatId, String langCode);
+    void setBotLanguage(long userId, String langCode);
 
-    void setDailyLimit(long chatId, byte dailyLimit);
+    void setDailyLimit(long userId, byte dailyLimit);
 }

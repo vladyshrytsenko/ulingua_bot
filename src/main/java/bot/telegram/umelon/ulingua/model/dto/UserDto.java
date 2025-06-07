@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class UserDto {
 
     private Long id;
-    private Long chatId;
     private String firstname;
     private String lastname;
     private String username;
@@ -52,7 +51,6 @@ public class UserDto {
 
         return UserDto.builder()
             .id(user.getId())
-            .chatId(user.getChatId())
             .firstname(user.getFirstname())
             .lastname(user.getLastname())
             .username(user.getUsername())
@@ -97,7 +95,6 @@ public class UserDto {
 
         return User.builder()
             .id(userDto.getId())
-            .chatId(userDto.getChatId())
             .firstname(userDto.getFirstname())
             .lastname(userDto.getLastname())
             .username(userDto.getUsername())

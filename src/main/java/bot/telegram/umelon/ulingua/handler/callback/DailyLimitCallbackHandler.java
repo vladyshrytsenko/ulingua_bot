@@ -38,10 +38,13 @@ public class DailyLimitCallbackHandler implements CallbackHandler {
 
         } else if (callbackData.equals(LIMIT_IS_FIVE.getValue())) {
             this.userService.setDailyLimit(callbackChatId, (byte) 5);
+            telegramUtils.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
         } else if (callbackData.equals(LIMIT_IS_TEN.getValue())) {
             this.userService.setDailyLimit(callbackChatId, (byte) 10);
+            telegramUtils.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
         } else if (callbackData.equals(LIMIT_IS_FIFTEEN.getValue())) {
             this.userService.setDailyLimit(callbackChatId, (byte) 15);
+            telegramUtils.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
         }
     }
 
