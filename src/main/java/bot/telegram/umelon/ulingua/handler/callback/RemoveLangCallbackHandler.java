@@ -33,7 +33,7 @@ public class RemoveLangCallbackHandler implements CallbackHandler {
             if (foundLanguage != null) {
                 userService.removeUserLanguage(callbackChatId, foundLanguage.getId());
 
-                String text = String.format(localMessages.get("message.language_removed"), selectedLanguageFlag);
+                String text = localMessages.get("message.language_removed").formatted(selectedLanguageFlag);
                 telegramUtils.sendEditMessageText(callbackChatId, callbackMessageId, text);
             }
         }

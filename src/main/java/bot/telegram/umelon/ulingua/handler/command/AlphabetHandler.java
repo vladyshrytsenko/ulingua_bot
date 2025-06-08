@@ -14,8 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Locale;
 
-import static java.lang.String.*;
-
 @Component
 @RequiredArgsConstructor
 public class AlphabetHandler implements CommandHandler {
@@ -34,7 +32,11 @@ public class AlphabetHandler implements CommandHandler {
             String alphabet = languageService.getAlphabet(locale);
 
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-            telegramUtils.sendMessage(userId, format(localMessages.get("message.alphabet_info"), byCountryCode.getUnicode(), alphabet), false);
+            telegramUtils.sendMessage(
+                userId,
+                localMessages.get("message.alphabet_info").formatted(byCountryCode.getUnicode(), alphabet),
+                false
+            );
         }
     }
 

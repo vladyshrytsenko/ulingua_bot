@@ -34,7 +34,9 @@ public class ProfileHandler implements CommandHandler {
 
             List<String> list = new ArrayList<>();
             currentUserDto.getLanguages().forEach(languageDto -> list.add(languageDto.getUnicode()));
-            String userInfo = String.format(localMessages.get("user.info"), currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list);
+            String userInfo = localMessages.get("user.info").formatted(
+                currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list
+            );
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
 
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
