@@ -9,8 +9,6 @@ import bot.telegram.umelon.ulingua.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static java.lang.String.format;
-
 @Component
 @RequiredArgsConstructor
 public class AwaitingLanguageByCountryHandler implements StateHandler {
@@ -19,12 +17,11 @@ public class AwaitingLanguageByCountryHandler implements StateHandler {
     public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
 
         String chatCompletion = generativeAiService.chatCompletion(
-            AiProvider.GEMINI, format(
-            "what is the language of communication in %s? Answer in one word and in %s. " +
+            AiProvider.GEMINI,
+            "what is the language of communication in %s? Answer in one word and in %s. ".formatted(messageText, currentUser.getLocalization()) +
             "Or if there are several, then answer separated by commas. " +
-            "Or if such a country does not exist, then say so",
-            messageText, currentUser.getLocalization()
-        ));
+            "Or if such a country does not exist, then say so"
+        );
 
         telegramUtils.sendMessage(userId, chatCompletion, false);
     }

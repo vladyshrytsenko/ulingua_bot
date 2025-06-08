@@ -35,7 +35,7 @@ public class AddLangCallbackHandler implements CallbackHandler {
             if (foundLanguage != null) {
                 userService.addUserLanguage(callbackChatId, foundLanguage.getId());
 
-                String text = String.format(localMessages.get("message.language_selected"), selectedLanguageFlag);
+                String text = localMessages.get("message.language_selected").formatted(selectedLanguageFlag);
                 telegramUtils.sendEditMessageText(callbackChatId, callbackMessageId, text);
             }
         }

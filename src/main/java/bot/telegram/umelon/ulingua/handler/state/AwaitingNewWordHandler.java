@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-import static java.lang.String.*;
-
 @Component
 @RequiredArgsConstructor
 public class AwaitingNewWordHandler implements StateHandler {
@@ -37,15 +35,13 @@ public class AwaitingNewWordHandler implements StateHandler {
             .map(LanguageDto::getUnicode)
             .collect(Collectors.joining(","));
 
-        String chatCompletion = this.generativeAiService.chatCompletion(AiProvider.GEMINI, format(
-            "Provide information about the word '%s' in %s language. " +
+        String chatCompletion = this.generativeAiService.chatCompletion(
+            AiProvider.GEMINI,
+            "Provide information about the word '%s' in %s language. ".formatted(word, currentUser.getCurrentLang() +
             "Respond ONLY with a valid minified JSON object (no extra formatting, no ```json, no trailing spaces/newlines). " +
             "Required fields: 'exists' (yes/no). If 'exists':'yes', add 'language_code' (2 uppercase letters). " +
             "Example of valid response: {\"exists\":\"yes\",\"language_code\":\"ES\"} " +
-            "Important: Do NOT include any other text, symbols, or formatting outside the JSON object.",
-            word,
-            currentUser.getCurrentLang(),
-            langList
+            "Important: Do NOT include any other text, symbols, or formatting outside the JSON object."
         ));
 
         JsonNode wordInfoJsonNode = null;
@@ -58,7 +54,7 @@ public class AwaitingNewWordHandler implements StateHandler {
         if (wordInfoJsonNode.get("exists").textValue().equalsIgnoreCase("yes")) {
             this.telegramUtils.sendMessage(
                 userId,
-                format(localMessages.get("message.adding_word_to_study_list"), messageText),
+                localMessages.get("message.adding_word_to_study_list").formatted(messageText),
                 true
             );
 
@@ -66,9 +62,8 @@ public class AwaitingNewWordHandler implements StateHandler {
             if (wordInfoJsonNode.get("language_code") == null) {
                 languageCode = this.generativeAiService.chatCompletion(
                     AiProvider.GEMINI,
-                    format("'language_code' was empty, although such a word exists. Generate again choosing one " +
-                           "from this list %s in which this word exists. Then output only the code (2 characters).", langList
-                    )
+                    "'language_code' was empty, although such a word exists. Generate again choosing one " +
+                    "from this list %s in which this word exists. Then output only the code (2 characters).".formatted(langList)
                 );
 
             } else {
