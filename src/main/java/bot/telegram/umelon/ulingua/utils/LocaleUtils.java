@@ -10,10 +10,6 @@ public class LocaleUtils {
     public static Locale getLocale(String localization) {
         if (localization != null) {
             switch (localization) {
-                case "AE":
-                    return new Locale("ar");
-                case "CN":
-                    return new Locale("zh", "CN");
                 case "DE":
                     return Locale.GERMAN;
                 case "FR":
@@ -24,14 +20,10 @@ public class LocaleUtils {
                     return Locale.ITALIAN;
                 case "JP":
                     return new Locale("ja", "JP");
-                case "KR":
-                    return new Locale("ko", "KR");
                 case "PL":
                     return new Locale("pl");
                 case "PT":
                     return new Locale("pt");
-                case "RU":
-                    return Locale.forLanguageTag("ru-RU");
                 case "TR":
                     return new Locale("tr");
                 case "UA":
