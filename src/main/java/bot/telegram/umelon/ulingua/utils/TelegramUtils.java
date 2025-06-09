@@ -24,6 +24,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -205,14 +206,20 @@ public class TelegramUtils {
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         UserDto currentUser = userService.getById(userId);
-        Set<LanguageDto> userLanguages = currentUser.getLanguages();
-        if (command.equals(CallbackCommandEnum.CHANGE_BOT_LANG)) {
-            LanguageDto byCountryCode = languageService.getByCountryCode(currentUser.getNativeLang());
-            userLanguages.add(byCountryCode);
+        Set<LanguageDto> languages;
+
+        if (currentUser == null) {
+            languages = new HashSet<>(languageService.findAll());
+        } else {
+            languages = currentUser.getLanguages();
+            if (command.equals(CallbackCommandEnum.CHANGE_BOT_LANG)) {
+                LanguageDto byCountryCode = languageService.getByCountryCode(currentUser.getNativeLang());
+                languages.add(byCountryCode);
+            }
         }
 
         int count = 0;
-        for (LanguageDto lang : userLanguages) {
+        for (LanguageDto lang : languages) {
             InlineKeyboardButton button = InlineKeyboardButton.builder()
                 .text(lang.getUnicode())
                 .callbackData(lang.getCountryCode().concat(command.getValue()))

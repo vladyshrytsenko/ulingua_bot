@@ -3,7 +3,7 @@ package bot.telegram.umelon.ulingua.handler.callback;
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
-import bot.telegram.umelon.ulingua.service.UserService;
+import bot.telegram.umelon.ulingua.service.LocalizationService;
 import bot.telegram.umelon.ulingua.utils.LocaleUtils;
 import bot.telegram.umelon.ulingua.utils.TelegramUtils;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class LocalizationCallbackHandler implements CallbackHandler {
 
         if (callbackData.endsWith(CallbackCommandEnum.CHANGE_BOT_LANG.getValue())) {
             String selectedLang = callbackData.replace(CallbackCommandEnum.CHANGE_BOT_LANG.getValue(), "");
-            userService.setBotLanguage(callbackChatId, selectedLang);
+            localizationService.setBotLanguage(callbackChatId, selectedLang);
 
             Locale locale = LocaleUtils.getLocale(selectedLang);
             localMessages = new LocalMessages(locale);
@@ -36,6 +36,6 @@ public class LocalizationCallbackHandler implements CallbackHandler {
         }
     }
 
-    private final UserService userService;
+    private final LocalizationService localizationService;
     private final TelegramUtils telegramUtils;
 }

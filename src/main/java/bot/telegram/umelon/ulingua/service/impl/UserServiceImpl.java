@@ -24,13 +24,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(long id) {
-        User user = userRepository.findById(id).orElse(null);
+        User user = this.userRepository.findById(id).orElse(null);
         return user != null ? UserDto.toDto(user) : null;
     }
 
     @Override
     public UserDto save(User user) {
-        Optional<User> existingUserOpt = userRepository.findById(user.getId());
+        Optional<User> existingUserOpt = this.userRepository.findById(user.getId());
         User savedUser;
 
         if (existingUserOpt.isPresent()) {
@@ -50,9 +50,9 @@ public class UserServiceImpl implements UserService {
                 existingUser.setLanguages(user.getLanguages());
             }
 
-            savedUser = userRepository.save(existingUser);
+            savedUser = this.userRepository.save(existingUser);
         } else {
-            savedUser = userRepository.save(user);
+            savedUser = this.userRepository.save(user);
         }
 
         return UserDto.toDto(savedUser);
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addUserLanguage(long userId, long languageId) {
-        LanguageDto foundLanguageDto = languageService.getById(languageId);
+        LanguageDto foundLanguageDto = this.languageService.getById(languageId);
 
         UserDto currentUser = getById(userId);
         if (currentUser.getLanguages() == null) {
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeUserLanguage(long userId, long languageId) {
-        LanguageDto foundLanguageDto = languageService.getById(languageId);
+        LanguageDto foundLanguageDto = this.languageService.getById(languageId);
 
         UserDto currentUser = getById(userId);
         currentUser.getLanguages().remove(foundLanguageDto);
@@ -94,34 +94,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setUserCurrentLanguage(long userId, String langCode) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<User> userOptional = this.userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setCurrentLang(langCode);
 
-            userRepository.save(user);
-        }
-    }
-
-    @Override
-    public void setBotLanguage(long userId, String langCode) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setLocalization(langCode);
-
-            userRepository.save(user);
+            this.userRepository.save(user);
         }
     }
 
     @Override
     public void setDailyLimit(long userId, byte dailyLimit) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<User> userOptional = this.userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setDailyLimit(dailyLimit);
 
-            userRepository.save(user);
+            this.userRepository.save(user);
         }
     }
 

@@ -8,14 +8,10 @@ import java.util.Locale;
 public interface LanguageService {
 
     void initializeLanguages();
-
     LanguageDto getById(long id);
-
     List<LanguageDto> findAll();
-
     LanguageDto getByCountryCode(String code);
-
+    int getTotalCount();
     void deleteById(long id);
-
     String getAlphabet(Locale locale);
 }

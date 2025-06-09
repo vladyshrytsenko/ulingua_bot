@@ -6,9 +6,6 @@ import bot.telegram.umelon.ulingua.model.entity.Word;
 public interface WordService {
 
     WordDto getById(long id);
-
     Word getByOriginal(String original);
-
     WordDto create(Word word);
-
 }
