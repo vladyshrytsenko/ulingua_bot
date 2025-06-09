@@ -6,6 +6,7 @@ import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.entity.User;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
+import bot.telegram.umelon.ulingua.service.LocalizationService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.utils.CountryFlagUtil;
 import bot.telegram.umelon.ulingua.utils.TelegramUtils;
@@ -24,11 +25,10 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
         Long callbackChatId = callbackQuery.getMessage().getChatId();
         Integer callbackMessageId = callbackQuery.getMessage().getMessageId();
 
-        String selectedNativeLanguageFlag = countryFlagUtil.getFlagByCountry(callbackData.substring(0, 2));
+        String selectedNativeLanguageFlag = this.countryFlagUtil.getFlagByCountry(callbackData.substring(0, 2));
+        LanguageDto foundLanguage = this.languageService.getByCountryCode(callbackData.substring(0, 2));
 
-        LanguageDto foundLanguage = languageService.getByCountryCode(callbackData.substring(0, 2));
         if (foundLanguage != null) {
-
             org.telegram.telegrambots.meta.api.objects.User from = callbackQuery.getFrom();
             User user = User.builder()
                 .id(callbackChatId)
@@ -36,18 +36,17 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
                 .lastname(from.getLastName())
                 .username(from.getUserName())
                 .nativeLang(foundLanguage.getCountryCode())
-                .localization(foundLanguage.getCountryCode())
                 .dailyLimit((byte) 5)
                 .build();
 
-            String text = String.format(
-                localMessages.get("message.native_language_selected"),
-                selectedNativeLanguageFlag
-            );
+            this.userService.save(user);
+            this.localizationService.setBotLanguage(callbackChatId, foundLanguage.getCountryCode());
 
-            userService.save(user);
-            telegramUtils.sendEditMessageTextWithInlineKeyboard(
-                callbackChatId, callbackMessageId, text, CallbackCommandEnum.ADD_LANG
+            this.telegramUtils.sendEditMessageTextWithInlineKeyboard(
+                callbackChatId,
+                callbackMessageId,
+                localMessages.get("message.native_language_selected").formatted(selectedNativeLanguageFlag),
+                CallbackCommandEnum.ADD_LANG
             );
         }
     }
@@ -55,5 +54,6 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
     private final CountryFlagUtil countryFlagUtil;
     private final LanguageService languageService;
     private final UserService userService;
+    private final LocalizationService localizationService;
     private final TelegramUtils telegramUtils;
 }

@@ -8,8 +8,6 @@ import java.util.List;
 public interface UserWordService {
 
     void addWordForUser(long userId, long wordId, UserWordProgress progress);
-
     List<UserWord> findAll(long userId);
-    
     boolean isDailyLimitExceeded(long userId, long userLimit);
 }

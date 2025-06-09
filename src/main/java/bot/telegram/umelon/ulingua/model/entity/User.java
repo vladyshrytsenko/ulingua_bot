@@ -32,7 +32,6 @@ public class User {
     private String username;
     private String nativeLang;
     private String currentLang;
-    private String localization;
     private byte dailyLimit;
 
     @ManyToMany(fetch = FetchType.EAGER)

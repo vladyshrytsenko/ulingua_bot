@@ -22,40 +22,65 @@ public class ProfileHandler implements CommandHandler {
 
     @Override
     public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
-        userService.setUserState(userId, null);
+        this.userService.setUserState(userId, null);
 
-        UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
+        UserDto currentUserDto = this.userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message, false);
+            this.telegramUtils.sendMessage(userId, message, false);
         } else {
-            LanguageDto nativeLang = languageService.getByCountryCode(currentUserDto.getNativeLang());
-            LanguageDto currentLang = languageService.getByCountryCode(currentUserDto.getCurrentLang());
+            LanguageDto nativeLang = this.languageService.getByCountryCode(currentUserDto.getNativeLang());
+            LanguageDto currentLang = this.languageService.getByCountryCode(currentUserDto.getCurrentLang());
+            int langTotalCount = this.languageService.getTotalCount() - 1; // except the user's native language
 
             List<String> list = new ArrayList<>();
-            currentUserDto.getLanguages().forEach(languageDto -> list.add(languageDto.getUnicode()));
-            String userInfo = localMessages.get("user.info").formatted(
-                currentUserDto.getCreatedAt(), nativeLang.getUnicode(), currentLang.getUnicode(), list
-            );
-            List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
+            currentUserDto.getLanguages()
+                .forEach(languageDto -> list.add(languageDto.getUnicode()));
 
-            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-            telegramUtils.sendInlineKeyboard(userId, userInfo, buttons);
+            String userInfo = localMessages.get("user.info").formatted(
+                currentUserDto.getCreatedAt(),
+                nativeLang.getUnicode(),
+                currentLang.getUnicode(),
+                list
+            );
+
+            List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages, langTotalCount);
+
+            this.telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+            this.telegramUtils.sendInlineKeyboard(userId, userInfo, buttons);
         }
     }
 
-    private List<ButtonData> getButtonDataList(UserDto currentUserDto, LocalMessages localMessages) {
-        List<ButtonData> buttons;
+    private List<ButtonData> getButtonDataList(
+        UserDto currentUserDto,
+        LocalMessages localMessages,
+        int langTotalCount) {
+
+        List<ButtonData> buttons = new ArrayList<>();
         if (currentUserDto.getLanguages().size() > 1) {
-            buttons = List.of(
-                new ButtonData(localMessages.get("button.add_language"), CallbackCommandEnum.ADD_LANG, 1),
-                new ButtonData(localMessages.get("button.change_current_language"), CallbackCommandEnum.SET_CURRENT_LANG, 1),
-                new ButtonData(localMessages.get("button.remove_language"), CallbackCommandEnum.REMOVE_LANG, 2)
-            );
+            if (langTotalCount > currentUserDto.getLanguages().size()) {
+                buttons.add(new ButtonData(
+                    localMessages.get("button.add_language"),
+                    CallbackCommandEnum.ADD_LANG,
+                    1
+                ));
+            }
+            buttons.add(new ButtonData(
+                localMessages.get("button.change_current_language"),
+                CallbackCommandEnum.SET_CURRENT_LANG,
+                1
+            ));
+            buttons.add(new ButtonData(
+                localMessages.get("button.remove_language"),
+                CallbackCommandEnum.REMOVE_LANG,
+                2
+            ));
         } else {
-            buttons = List.of(
-                new ButtonData(localMessages.get("button.add_language"), CallbackCommandEnum.ADD_LANG, 1)
-            );
+            buttons = List.of(new ButtonData(
+                localMessages.get("button.add_language"),
+                CallbackCommandEnum.ADD_LANG,
+                1
+            ));
         }
         return buttons;
     }

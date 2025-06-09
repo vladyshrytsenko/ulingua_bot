@@ -7,6 +7,7 @@ import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.handler.StateHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
+import bot.telegram.umelon.ulingua.model.dto.LocalizationDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.MenuEnum;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
@@ -69,9 +70,10 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
             UserDto currentUser = userService.getById(userId);
             UserState userState = userService.getUserState(userId);
 
-            Locale locale = null;
-            if (currentUser!= null) {
-                locale = LocaleUtils.getLocale(currentUser.getLocalization());
+            Locale locale;
+            LocalizationDto localizationDto = this.localizationService.getByChatId(userId);
+            if (localizationDto != null) {
+                locale = LocaleUtils.getLocale(localizationDto.getLangCode());
             } else {
                 locale = LocaleUtils.getLocale(Locale.ENGLISH.getCountry());
             }
@@ -130,6 +132,7 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
     private LocalMessages localMessages;
 
     private final UserService userService;
+    private final LocalizationService localizationService;
     private final CommandHandlerFactory commandHandlerFactory;
     private final StateHandlerFactory stateHandlerFactory;
     private final CallbackHandlerFactory callbackHandlerFactory;

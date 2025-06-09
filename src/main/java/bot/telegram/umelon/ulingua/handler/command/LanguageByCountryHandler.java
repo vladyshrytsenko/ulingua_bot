@@ -2,7 +2,6 @@ package bot.telegram.umelon.ulingua.handler.command;
 
 import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
-import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.utils.TelegramUtils;
@@ -18,19 +17,11 @@ public class LanguageByCountryHandler implements CommandHandler {
     public void handle(long userId, String messageText, Update update, LocalMessages localMessages) {
         userService.setUserState(userId, null);
 
-        String message;
-        UserDto currentUserDto = this.userService.getById(update.getMessage().getChat().getId());
+        String message = localMessages.get("message.select_language_by_country");
+        userService.setUserState(userId, UserState.AWAITING_COUNTRY);
 
-        if (currentUserDto == null) {
-            message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message, false);
-        } else {
-            message = localMessages.get("message.select_language_by_country");
-            userService.setUserState(userId, UserState.AWAITING_COUNTRY);
-
-            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-            telegramUtils.sendMessage(userId, message, true);
-        }
+        telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+        telegramUtils.sendMessage(userId, message, true);
     }
 
     private final UserService userService;
