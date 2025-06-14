@@ -3,7 +3,7 @@ package bot.telegram.umelon.ulingua.handler.callback;
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
-import bot.telegram.umelon.ulingua.model.entity.User;
+import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.LocalizationService;
@@ -30,7 +30,7 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
 
         if (foundLanguage != null) {
             org.telegram.telegrambots.meta.api.objects.User from = callbackQuery.getFrom();
-            User user = User.builder()
+            UserDto userRequest = UserDto.builder()
                 .id(callbackChatId)
                 .firstname(from.getFirstName())
                 .lastname(from.getLastName())
@@ -39,7 +39,7 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
                 .dailyLimit((byte) 5)
                 .build();
 
-            this.userService.save(user);
+            this.userService.save(userRequest);
             this.localizationService.setBotLanguage(callbackChatId, foundLanguage.countryCode());
 
             this.telegramUtils.sendEditMessageTextWithInlineKeyboard(

@@ -5,11 +5,9 @@ import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
-import bot.telegram.umelon.ulingua.model.entity.Word;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
-import bot.telegram.umelon.ulingua.model.mapper.LanguageMapper;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
@@ -73,11 +71,11 @@ public class AwaitingNewWordHandler implements StateHandler {
 
             LanguageDto byCountryCode = this.languageService.getByCountryCode(languageCode);
 
-            Word newWord = Word.builder()
-                .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
+            WordDto wordRequest = WordDto.builder()
+                .language(byCountryCode)
                 .original(word)
                 .build();
-            WordDto createdWord = this.wordService.create(newWord);
+            WordDto createdWord = this.wordService.create(wordRequest);
 
             this.userWordService.addWordForUser(
                 currentUser.id(),
