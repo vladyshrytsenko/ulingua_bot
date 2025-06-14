@@ -64,19 +64,18 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
 
         } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_ALREADY_KNOW.getValue())) {
             String wordStr = RANDOM_NEW_WORD_ALREADY_KNOW.getDescription();
-            Word wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_ALREADY_KNOW.getDescription());
+            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_ALREADY_KNOW.getDescription());
 
             if (wordByOriginal == null) {
-                Word newWord = Word.builder()
+                WordDto wordRequest = WordDto.builder()
                     .original(wordStr)
-                    .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
+                    .language(byCountryCode)
                     .build();
-                WordDto createdWordDto = this.wordService.create(newWord);
-                wordByOriginal = WordMapper.MAPPER.toEntity(createdWordDto);
+                wordByOriginal = this.wordService.create(wordRequest);
             }
             this.userWordService.addWordForUser(
                 message.getChatId(),
-                wordByOriginal.getId(),
+                wordByOriginal.id(),
                 UserWordProgress.KNEW
             );
 
@@ -87,19 +86,18 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
 
         } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_FOR_STUDY.getValue())) {
             String wordStr = RANDOM_NEW_WORD_FOR_STUDY.getDescription();
-            Word wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_FOR_STUDY.getDescription());
+            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_FOR_STUDY.getDescription());
 
             if (wordByOriginal == null) {
-                Word newWord = Word.builder()
+                WordDto wordRequest = WordDto.builder()
                     .original(wordStr)
-                    .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
+                    .language(byCountryCode)
                     .build();
-                WordDto createdWordDto = this.wordService.create(newWord);
-                wordByOriginal = WordMapper.MAPPER.toEntity(createdWordDto);
+                wordByOriginal = this.wordService.create(wordRequest);
             }
             this.userWordService.addWordForUser(
                 message.getChatId(),
-                wordByOriginal.getId(),
+                wordByOriginal.id(),
                 UserWordProgress.STUDYING
             );
 
@@ -108,19 +106,18 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
 
         } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_NOT_INTERESTING.getValue())) {
             String wordStr = RANDOM_NEW_WORD_NOT_INTERESTING.getDescription();
-            Word wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_NOT_INTERESTING.getDescription());
+            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_NOT_INTERESTING.getDescription());
 
             if (wordByOriginal == null) {
-                Word newWord = Word.builder()
+                WordDto wordRequest = WordDto.builder()
                     .original(wordStr)
-                    .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
+                    .language(byCountryCode)
                     .build();
-                WordDto createdWordDto = this.wordService.create(newWord);
-                wordByOriginal = WordMapper.MAPPER.toEntity(createdWordDto);
+                wordByOriginal = this.wordService.create(wordRequest);
             }
             this.userWordService.addWordForUser(
                 message.getChatId(),
-                wordByOriginal.getId(),
+                wordByOriginal.id(),
                 UserWordProgress.NOT_INTERESTED
             );
 

@@ -30,27 +30,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto save(User user) {
-        User savedUser = this.userRepository.save(user);
+    public UserDto save(UserDto requestDto) {
+        User entity = UserMapper.MAPPER.toEntity(requestDto);
+        User savedUser = this.userRepository.save(entity);
+
         return UserMapper.MAPPER.toDto(savedUser);
     }
 
     @Override
     @Transactional
     public void addUserLanguage(long userId, LanguageDto languageDto) {
-        UserDto currentUser = this.getById(userId);
-        if (currentUser.languages() == null) {
-            currentUser = currentUser.toBuilder()
+        UserDto currentUserDto = this.getById(userId);
+        if (currentUserDto.languages() == null) {
+            currentUserDto = currentUserDto.toBuilder()
                 .languages(new HashSet<>())
                 .build();
         }
-        currentUser.languages().add(languageDto);
-        currentUser = currentUser.toBuilder()
+        currentUserDto.languages().add(languageDto);
+        currentUserDto = currentUserDto.toBuilder()
             .currentLang(languageDto.countryCode())
             .build();
 
-        User currentUserEntity = UserMapper.MAPPER.toEntity(currentUser);
-        this.save(currentUserEntity);
+        this.save(currentUserDto);
     }
 
     @Override
@@ -58,19 +59,18 @@ public class UserServiceImpl implements UserService {
     public void removeUserLanguage(long userId, long languageId) {
         LanguageDto foundLanguageDto = this.languageService.getById(languageId);
 
-        UserDto currentUser = this.getById(userId);
-        currentUser.languages().remove(foundLanguageDto);
+        UserDto currentUserDto = this.getById(userId);
+        currentUserDto.languages().remove(foundLanguageDto);
 
-        if (foundLanguageDto.countryCode().equals(currentUser.currentLang())) {
-            Set<LanguageDto> userLanguages = currentUser.languages();
+        if (foundLanguageDto.countryCode().equals(currentUserDto.currentLang())) {
+            Set<LanguageDto> userLanguages = currentUserDto.languages();
             LanguageDto lastUserLanguage = new ArrayList<>(userLanguages).get(userLanguages.size() - 1);
-            currentUser = currentUser.toBuilder()
+            currentUserDto = currentUserDto.toBuilder()
                 .currentLang(lastUserLanguage.countryCode())
                 .build();
         }
 
-        User currentUserEntity = UserMapper.MAPPER.toEntity(currentUser);
-        this.save(currentUserEntity);
+        this.save(currentUserDto);
     }
 
     @Override

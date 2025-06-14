@@ -20,14 +20,17 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public Word getByOriginal(String original) {
-        return this.wordRepository.findByOriginalIgnoreCase(original).orElse(null);
+    public WordDto getByOriginal(String original) {
+        Word word = this.wordRepository.findByOriginalIgnoreCase(original).orElse(null);
+        return word != null ? WordMapper.MAPPER.toDto(word) : null;
     }
 
     @Override
     @Transactional
-    public WordDto create(Word word) {
-        Word savedWord = this.wordRepository.save(word);
+    public WordDto create(WordDto requestDto) {
+        Word entity = WordMapper.MAPPER.toEntity(requestDto);
+        Word savedWord = this.wordRepository.save(entity);
+
         return WordMapper.MAPPER.toDto(savedWord);
     }
 
