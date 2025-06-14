@@ -2,7 +2,7 @@ package bot.telegram.umelon.ulingua.model.dto;
 
 import lombok.Builder;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Builder(toBuilder = true)
@@ -14,7 +14,7 @@ public record UserDto(
     String nativeLang,
     String currentLang,
     Set<LanguageDto> languages,
-    Date createdAt,
+    LocalDateTime createdAt,
     byte dailyLimit
 ) {
 }
