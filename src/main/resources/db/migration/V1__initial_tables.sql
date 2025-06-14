@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     native_lang VARCHAR(10),
     current_lang VARCHAR(10),
     localization VARCHAR(10),
-    created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
     daily_limit SMALLINT NOT NULL
 );
 
@@ -27,6 +27,6 @@ CREATE TABLE IF NOT EXISTS user_words (
     user_id BIGINT REFERENCES users(id),
     word_id BIGINT REFERENCES words(id),
     progress TEXT NOT NULL,
-    created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, word_id)
 );
