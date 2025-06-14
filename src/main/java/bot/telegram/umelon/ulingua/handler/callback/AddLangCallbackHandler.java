@@ -39,7 +39,7 @@ public class AddLangCallbackHandler implements CallbackHandler {
 
             LanguageDto foundLanguage = languageService.getByCountryCode(callbackData.substring(0, 2));
             if (foundLanguage != null) {
-                userService.addUserLanguage(callbackChatId, foundLanguage.id());
+                userService.addUserLanguage(callbackChatId, foundLanguage);
 
                 LocalizationDto localizationDto = this.localizationService.getByChatId(callbackChatId);
                 String currentLocalization = localizationDto.langCode();

@@ -37,18 +37,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void addUserLanguage(long userId, long languageId) {
-        LanguageDto foundLanguageDto = this.languageService.getById(languageId);
-
+    public void addUserLanguage(long userId, LanguageDto languageDto) {
         UserDto currentUser = this.getById(userId);
         if (currentUser.languages() == null) {
             currentUser = currentUser.toBuilder()
                 .languages(new HashSet<>())
                 .build();
         }
-        currentUser.languages().add(foundLanguageDto);
+        currentUser.languages().add(languageDto);
         currentUser = currentUser.toBuilder()
-            .currentLang(foundLanguageDto.countryCode())
+            .currentLang(languageDto.countryCode())
             .build();
 
         User currentUserEntity = UserMapper.MAPPER.toEntity(currentUser);
