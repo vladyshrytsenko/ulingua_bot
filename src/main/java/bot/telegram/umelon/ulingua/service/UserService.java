@@ -1,5 +1,6 @@
 package bot.telegram.umelon.ulingua.service;
 
+import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.entity.User;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
@@ -10,7 +11,7 @@ public interface UserService {
     UserState getUserState(long userId);
     UserDto getById(long id);
     UserDto save(User user);
-    void addUserLanguage(long userId, long languageId);
+    void addUserLanguage(long userId, LanguageDto languageDto);
     void removeUserLanguage(long userId, long languageId);
     void setUserCurrentLanguage(long userId, String langCode);
     void setDailyLimit(long userId, byte dailyLimit);
