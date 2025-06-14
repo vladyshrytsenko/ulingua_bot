@@ -21,7 +21,7 @@ public class AwaitingLanguageByCountryHandler implements StateHandler {
 
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI,
-            "what is the language of communication in %s? Answer in one word and in %s. ".formatted(messageText, localizationDto.getLangCode()) +
+            "what is the language of communication in %s? Answer in one word and in %s. ".formatted(messageText, localizationDto.langCode()) +
             "Or if there are several, then answer separated by commas. Or if such a country does not exist, then say so"
         );
 

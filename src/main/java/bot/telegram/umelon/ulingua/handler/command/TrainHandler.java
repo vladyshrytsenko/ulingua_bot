@@ -40,19 +40,19 @@ public class TrainHandler implements CommandHandler {
                 Long wordId = uw.getWordId();
                 WordDto word = this.wordService.getById(wordId);
                 if (word != null) {
-                    wordCountByLanguage.merge(word.getLanguage(), 1, Integer::sum);
+                    wordCountByLanguage.merge(word.language(), 1, Integer::sum);
                 }
             });
 
             StringBuilder sb = new StringBuilder();
             wordCountByLanguage.forEach((language, count) -> {
-                sb.append(language.getUnicode()).append(" - ").append(count).append("\n");
+                sb.append(language.unicode()).append(" - ").append(count).append("\n");
             });
             String trainInfo = String.format("""
                 Слiв вивчено:
                 %s
                 Обмеження на сьогодні: %d
-                """, sb, currentUserDto.getDailyLimit());
+                """, sb, currentUserDto.dailyLimit());
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
 
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());

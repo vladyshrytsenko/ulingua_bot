@@ -73,7 +73,7 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
             Locale locale;
             LocalizationDto localizationDto = this.localizationService.getByChatId(userId);
             if (localizationDto != null) {
-                locale = LocaleUtils.getLocale(localizationDto.getLangCode());
+                locale = LocaleUtils.getLocale(localizationDto.langCode());
             } else {
                 locale = LocaleUtils.getLocale(Locale.ENGLISH.getCountry());
             }

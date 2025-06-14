@@ -2,6 +2,7 @@ package bot.telegram.umelon.ulingua.service.impl;
 
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.entity.Language;
+import bot.telegram.umelon.ulingua.model.mapper.LanguageMapper;
 import bot.telegram.umelon.ulingua.repository.LanguageRepository;
 import bot.telegram.umelon.ulingua.utils.CountryFlagUtil;
 import bot.telegram.umelon.ulingua.service.LanguageService;
@@ -36,20 +37,20 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public LanguageDto getById(long id) {
         Language language = this.languageRepository.findById(id).orElse(null);
-        return language != null ? LanguageDto.toDto(language) : null;
+        return language != null ? LanguageMapper.MAPPER.toDto(language) : null;
     }
 
     @Override
     public List<LanguageDto> findAll() {
         List<Language> languages = this.languageRepository.findAll();
-        return LanguageDto.toDtoList(languages);
+        return LanguageMapper.MAPPER.toDtoList(languages);
     }
 
 
     @Override
     public LanguageDto getByCountryCode(String code) {
         Optional<Language> languageOptional = this.languageRepository.getByCountryCode(code);
-        return languageOptional.map(LanguageDto::toDto).orElse(null);
+        return languageOptional.map(LanguageMapper.MAPPER::toDto).orElse(null);
     }
 
     @Override

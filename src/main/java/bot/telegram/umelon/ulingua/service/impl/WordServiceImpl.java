@@ -2,6 +2,7 @@ package bot.telegram.umelon.ulingua.service.impl;
 
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
 import bot.telegram.umelon.ulingua.model.entity.Word;
+import bot.telegram.umelon.ulingua.model.mapper.WordMapper;
 import bot.telegram.umelon.ulingua.repository.WordRepository;
 import bot.telegram.umelon.ulingua.service.WordService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class WordServiceImpl implements WordService {
     @Override
     public WordDto getById(long id) {
         Word word = wordRepository.findById(id).orElse(null);
-        return word != null ? WordDto.toDto(word) : null;
+        return word != null ? WordMapper.MAPPER.toDto(word) : null;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class WordServiceImpl implements WordService {
             savedWord = wordRepository.save(newWord);
         }
 
-        return WordDto.toDto(savedWord);
+        return WordMapper.MAPPER.toDto(savedWord);
     }
 
     private final WordRepository wordRepository;

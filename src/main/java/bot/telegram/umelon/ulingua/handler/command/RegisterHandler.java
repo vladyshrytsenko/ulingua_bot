@@ -27,8 +27,8 @@ public class RegisterHandler implements CommandHandler {
             telegramUtils.sendLanguagesInlineKeyboard(userId, text, CallbackCommandEnum.ADD_NATIVE_LANG);
         } else {
             List<String> list = new ArrayList<>();
-            currentUserDto.getLanguages().forEach(languageDto -> {
-                String langFlag = countryFlagUtil.getFlagByCountry(languageDto.getCountryCode());
+            currentUserDto.languages().forEach(languageDto -> {
+                String langFlag = countryFlagUtil.getFlagByCountry(languageDto.countryCode());
                 list.add(langFlag);
             });
 

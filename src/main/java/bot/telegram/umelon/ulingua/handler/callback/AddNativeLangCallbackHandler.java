@@ -35,12 +35,12 @@ public class AddNativeLangCallbackHandler implements CallbackHandler {
                 .firstname(from.getFirstName())
                 .lastname(from.getLastName())
                 .username(from.getUserName())
-                .nativeLang(foundLanguage.getCountryCode())
+                .nativeLang(foundLanguage.countryCode())
                 .dailyLimit((byte) 5)
                 .build();
 
             this.userService.save(user);
-            this.localizationService.setBotLanguage(callbackChatId, foundLanguage.getCountryCode());
+            this.localizationService.setBotLanguage(callbackChatId, foundLanguage.countryCode());
 
             this.telegramUtils.sendEditMessageTextWithInlineKeyboard(
                 callbackChatId,

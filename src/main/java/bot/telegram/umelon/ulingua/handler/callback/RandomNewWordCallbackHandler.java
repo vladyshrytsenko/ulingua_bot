@@ -10,6 +10,8 @@ import bot.telegram.umelon.ulingua.model.entity.Word;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
+import bot.telegram.umelon.ulingua.model.mapper.LanguageMapper;
+import bot.telegram.umelon.ulingua.model.mapper.WordMapper;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
@@ -35,20 +37,20 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
         MaybeInaccessibleMessage message = callbackQuery.getMessage();
 
         UserDto currentUser = this.userService.getById(message.getChatId());
-        LanguageDto byCountryCode = this.languageService.getByCountryCode(currentUser.getCurrentLang());
+        LanguageDto byCountryCode = this.languageService.getByCountryCode(currentUser.currentLang());
 
         if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD.getValue())) {
-            byte dailyLimit = currentUser.getDailyLimit();
+            byte dailyLimit = currentUser.dailyLimit();
 
-            if (this.userWordService.isDailyLimitExceeded(currentUser.getId(), dailyLimit)) {
-                this.telegramUtils.sendMessage(currentUser.getId(), "Daily limit exceeded!", false);
+            if (this.userWordService.isDailyLimitExceeded(currentUser.id(), dailyLimit)) {
+                this.telegramUtils.sendMessage(currentUser.id(), "Daily limit exceeded!", false);
             } else {
                 String chatCompletion = this.generativeAiService.chatCompletion(
                     AiProvider.GEMINI, format(
                     "I am learning %s. Give me exactly one commonly used word in this language to learn, " +
                     "with no additional context or explanation. Respond with only the word, " +
                     "and do not include a period at the end.",
-                    currentUser.getCurrentLang()
+                    currentUser.currentLang()
                 ));
 
                 List<ButtonData> buttons = getButtonDataList(chatCompletion);
@@ -67,10 +69,10 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
             if (wordByOriginal == null) {
                 Word newWord = Word.builder()
                     .original(wordStr)
-                    .language(LanguageDto.toEntity(byCountryCode))
+                    .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
                     .build();
                 WordDto createdWordDto = this.wordService.create(newWord);
-                wordByOriginal = WordDto.toEntity(createdWordDto);
+                wordByOriginal = WordMapper.MAPPER.toEntity(createdWordDto);
             }
             this.userWordService.addWordForUser(
                 message.getChatId(),
@@ -90,10 +92,10 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
             if (wordByOriginal == null) {
                 Word newWord = Word.builder()
                     .original(wordStr)
-                    .language(LanguageDto.toEntity(byCountryCode))
+                    .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
                     .build();
                 WordDto createdWordDto = this.wordService.create(newWord);
-                wordByOriginal = WordDto.toEntity(createdWordDto);
+                wordByOriginal = WordMapper.MAPPER.toEntity(createdWordDto);
             }
             this.userWordService.addWordForUser(
                 message.getChatId(),
@@ -111,10 +113,10 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
             if (wordByOriginal == null) {
                 Word newWord = Word.builder()
                     .original(wordStr)
-                    .language(LanguageDto.toEntity(byCountryCode))
+                    .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
                     .build();
                 WordDto createdWordDto = this.wordService.create(newWord);
-                wordByOriginal = WordDto.toEntity(createdWordDto);
+                wordByOriginal = WordMapper.MAPPER.toEntity(createdWordDto);
             }
             this.userWordService.addWordForUser(
                 message.getChatId(),

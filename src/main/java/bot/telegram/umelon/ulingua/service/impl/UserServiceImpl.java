@@ -4,6 +4,7 @@ import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.entity.User;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
+import bot.telegram.umelon.ulingua.model.mapper.UserMapper;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getById(long id) {
         User user = this.userRepository.findById(id).orElse(null);
-        return user != null ? UserDto.toDto(user) : null;
+        return user != null ? UserMapper.MAPPER.toDto(user) : null;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
             savedUser = this.userRepository.save(user);
         }
 
-        return UserDto.toDto(savedUser);
+        return UserMapper.MAPPER.toDto(savedUser);
     }
 
     @Override
@@ -64,13 +65,17 @@ public class UserServiceImpl implements UserService {
         LanguageDto foundLanguageDto = this.languageService.getById(languageId);
 
         UserDto currentUser = getById(userId);
-        if (currentUser.getLanguages() == null) {
-            currentUser.setLanguages(new HashSet<>());
+        if (currentUser.languages() == null) {
+            currentUser = currentUser.toBuilder()
+                .languages(new HashSet<>())
+                .build();
         }
-        currentUser.getLanguages().add(foundLanguageDto);
-        currentUser.setCurrentLang(foundLanguageDto.getCountryCode());
+        currentUser.languages().add(foundLanguageDto);
+        currentUser = currentUser.toBuilder()
+            .currentLang(foundLanguageDto.countryCode())
+            .build();
 
-        User currentUserEntity = UserDto.toEntity(currentUser);
+        User currentUserEntity = UserMapper.MAPPER.toEntity(currentUser);
         save(currentUserEntity);
     }
 
@@ -80,15 +85,17 @@ public class UserServiceImpl implements UserService {
         LanguageDto foundLanguageDto = this.languageService.getById(languageId);
 
         UserDto currentUser = getById(userId);
-        currentUser.getLanguages().remove(foundLanguageDto);
+        currentUser.languages().remove(foundLanguageDto);
 
-        if (foundLanguageDto.getCountryCode().equals(currentUser.getCurrentLang())) {
-            Set<LanguageDto> userLanguages = currentUser.getLanguages();
+        if (foundLanguageDto.countryCode().equals(currentUser.currentLang())) {
+            Set<LanguageDto> userLanguages = currentUser.languages();
             LanguageDto lastUserLanguage = new ArrayList<>(userLanguages).get(userLanguages.size() - 1);
-            currentUser.setCurrentLang(lastUserLanguage.getCountryCode());
+            currentUser = currentUser.toBuilder()
+                .currentLang(lastUserLanguage.countryCode())
+                .build();
         }
 
-        User currentUserEntity = UserDto.toEntity(currentUser);
+        User currentUserEntity = UserMapper.MAPPER.toEntity(currentUser);
         save(currentUserEntity);
     }
 

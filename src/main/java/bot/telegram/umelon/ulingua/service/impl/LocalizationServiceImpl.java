@@ -2,6 +2,7 @@ package bot.telegram.umelon.ulingua.service.impl;
 
 import bot.telegram.umelon.ulingua.model.dto.LocalizationDto;
 import bot.telegram.umelon.ulingua.model.entity.Localization;
+import bot.telegram.umelon.ulingua.model.mapper.LocalizationMapper;
 import bot.telegram.umelon.ulingua.repository.LocalizationRepository;
 import bot.telegram.umelon.ulingua.service.LocalizationService;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +15,13 @@ public class LocalizationServiceImpl implements LocalizationService {
     @Override
     public LocalizationDto getById(long id) {
         Localization localization = this.localizationRepository.findById(id).orElse(null);
-        return localization != null ? LocalizationDto.toDto(localization) : null;
+        return localization != null ? LocalizationMapper.MAPPER.toDto(localization) : null;
     }
 
     @Override
     public LocalizationDto getByChatId(long chatId) {
         Localization localization = this.localizationRepository.findByChatId(chatId).orElse(null);
-        return localization != null ? LocalizationDto.toDto(localization) : null;
+        return localization != null ? LocalizationMapper.MAPPER.toDto(localization) : null;
     }
 
     @Override
