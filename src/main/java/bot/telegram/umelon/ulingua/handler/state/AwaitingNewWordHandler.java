@@ -9,6 +9,7 @@ import bot.telegram.umelon.ulingua.model.entity.Word;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
+import bot.telegram.umelon.ulingua.model.mapper.LanguageMapper;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
@@ -31,13 +32,13 @@ public class AwaitingNewWordHandler implements StateHandler {
     public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
         String word = messageText.split(" ")[0];
 
-        String langList = currentUser.getLanguages().stream()
-            .map(LanguageDto::getUnicode)
+        String langList = currentUser.languages().stream()
+            .map(LanguageDto::unicode)
             .collect(Collectors.joining(","));
 
         String chatCompletion = this.generativeAiService.chatCompletion(
             AiProvider.GEMINI,
-            "Provide information about the word '%s' in %s language. ".formatted(word, currentUser.getCurrentLang() +
+            "Provide information about the word '%s' in %s language. ".formatted(word, currentUser.currentLang() +
             "Respond ONLY with a valid minified JSON object (no extra formatting, no ```json, no trailing spaces/newlines). " +
             "Required fields: 'exists' (yes/no). If 'exists':'yes', add 'language_code' (2 uppercase letters). " +
             "Example of valid response: {\"exists\":\"yes\",\"language_code\":\"ES\"} " +
@@ -73,14 +74,14 @@ public class AwaitingNewWordHandler implements StateHandler {
             LanguageDto byCountryCode = this.languageService.getByCountryCode(languageCode);
 
             Word newWord = Word.builder()
-                .language(LanguageDto.toEntity(byCountryCode))
+                .language(LanguageMapper.MAPPER.toEntity(byCountryCode))
                 .original(word)
                 .build();
             WordDto createdWord = this.wordService.create(newWord);
 
             this.userWordService.addWordForUser(
-                currentUser.getId(),
-                createdWord.getId(),
+                currentUser.id(),
+                createdWord.id(),
                 UserWordProgress.STUDYING
             );
 

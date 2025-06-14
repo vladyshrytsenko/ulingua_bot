@@ -25,7 +25,7 @@ public class AwaitingSentenceDiscussHandler implements StateHandler {
                 AiProvider.GEMINI, format(
                 "I'd like to discuss the following response you provided: '%s'. " +
                 "And that is my next question: %s. Please, answer in %s language?",
-                previousResponse, messageText, currentUser.getNativeLang()
+                previousResponse, messageText, currentUser.nativeLang()
             ));
 
             telegramUtils.sendMessage(userId, discussionPrompt, true);

@@ -106,9 +106,9 @@ public class TelegramUtils {
 
         if (currentUser != null) {
             languages.removeIf(
-                languageDto -> currentUser.getLanguages().stream()
-                                   .anyMatch(lang -> lang.getCountryCode().equals(languageDto.getCountryCode())) ||
-                               currentUser.getNativeLang().equals(languageDto.getCountryCode())
+                languageDto -> currentUser.languages().stream()
+                                   .anyMatch(lang -> lang.countryCode().equals(languageDto.countryCode())) ||
+                               currentUser.nativeLang().equals(languageDto.countryCode())
             );
         }
 
@@ -116,8 +116,8 @@ public class TelegramUtils {
             LanguageDto lang = languages.get(i);
 
             InlineKeyboardButton button = InlineKeyboardButton.builder()
-                .text(lang.getUnicode())
-                .callbackData(lang.getCountryCode().concat(command.getValue()))
+                .text(lang.unicode())
+                .callbackData(lang.countryCode().concat(command.getValue()))
                 .build();
 
             row.add(button);
@@ -155,9 +155,9 @@ public class TelegramUtils {
         UserDto currentUser = userService.getById(userId);
         if (currentUser != null) {
             languages.removeIf(
-                languageDto -> currentUser.getLanguages().stream()
-                                   .anyMatch(lang -> lang.getCountryCode().equals(languageDto.getCountryCode())) ||
-                               currentUser.getNativeLang().equals(languageDto.getCountryCode())
+                languageDto -> currentUser.languages().stream()
+                                   .anyMatch(lang -> lang.countryCode().equals(languageDto.countryCode())) ||
+                               currentUser.nativeLang().equals(languageDto.countryCode())
             );
         }
 
@@ -165,10 +165,10 @@ public class TelegramUtils {
         for (int i = 0; i < languages.size(); i++) {
             LanguageDto lang = languages.get(i);
 
-            String callbackData = lang.getCountryCode().concat(command.getValue());
+            String callbackData = lang.countryCode().concat(command.getValue());
 
             InlineKeyboardButton button = InlineKeyboardButton.builder()
-                .text(lang.getUnicode())
+                .text(lang.unicode())
                 .callbackData(callbackData)
                 .build();
 
@@ -211,9 +211,9 @@ public class TelegramUtils {
         if (currentUser == null) {
             languages = new HashSet<>(languageService.findAll());
         } else {
-            languages = currentUser.getLanguages();
+            languages = currentUser.languages();
             if (command.equals(CallbackCommandEnum.CHANGE_BOT_LANG)) {
-                LanguageDto byCountryCode = languageService.getByCountryCode(currentUser.getNativeLang());
+                LanguageDto byCountryCode = languageService.getByCountryCode(currentUser.nativeLang());
                 languages.add(byCountryCode);
             }
         }
@@ -221,8 +221,8 @@ public class TelegramUtils {
         int count = 0;
         for (LanguageDto lang : languages) {
             InlineKeyboardButton button = InlineKeyboardButton.builder()
-                .text(lang.getUnicode())
-                .callbackData(lang.getCountryCode().concat(command.getValue()))
+                .text(lang.unicode())
+                .callbackData(lang.countryCode().concat(command.getValue()))
                 .build();
 
             row.add(button);

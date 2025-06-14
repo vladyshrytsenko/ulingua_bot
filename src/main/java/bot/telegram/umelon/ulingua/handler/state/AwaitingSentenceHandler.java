@@ -25,7 +25,7 @@ public class AwaitingSentenceHandler implements StateHandler {
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI, format(
             "Check the sentence '%s' written in %s. If there are any errors, please explain them in %s, keeping the original words with mistakes in %s.",
-            messageText, currentUser.getCurrentLang(), currentUser.getNativeLang(), currentUser.getCurrentLang()
+            messageText, currentUser.currentLang(), currentUser.nativeLang(), currentUser.currentLang()
         ));
 
         CallbackCommandEnum sentenceDiscuss = CallbackCommandEnum.WRITING_SENTENCE_DISCUSS;

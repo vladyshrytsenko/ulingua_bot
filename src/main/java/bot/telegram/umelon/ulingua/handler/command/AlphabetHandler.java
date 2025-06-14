@@ -27,14 +27,14 @@ public class AlphabetHandler implements CommandHandler {
             String message = localMessages.get("message.register_required");
             telegramUtils.sendMessage(userId, message, false);
         } else {
-            LanguageDto byCountryCode = languageService.getByCountryCode(currentUserDto.getCurrentLang());
-            Locale locale = LocaleUtils.getLocale(currentUserDto.getCurrentLang());
+            LanguageDto byCountryCode = languageService.getByCountryCode(currentUserDto.currentLang());
+            Locale locale = LocaleUtils.getLocale(currentUserDto.currentLang());
             String alphabet = languageService.getAlphabet(locale);
 
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
             telegramUtils.sendMessage(
                 userId,
-                localMessages.get("message.alphabet_info").formatted(byCountryCode.getUnicode(), alphabet),
+                localMessages.get("message.alphabet_info").formatted(byCountryCode.unicode(), alphabet),
                 false
             );
         }

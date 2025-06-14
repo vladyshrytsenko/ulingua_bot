@@ -22,7 +22,7 @@ public class AwaitingConversationHandler implements StateHandler {
             AiProvider.GEMINI, format(
             "Since I am studying %s language, I want to talk to you about this topic: %s. " +
             "Please, give a short answer in 2-3 sentences in %s.",
-            currentUser.getCurrentLang(), messageText, currentUser.getCurrentLang()
+            currentUser.currentLang(), messageText, currentUser.currentLang()
         ));
 
         telegramUtils.sendMessage(userId, chatCompletion, true);

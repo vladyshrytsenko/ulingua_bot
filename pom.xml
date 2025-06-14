@@ -16,6 +16,8 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring-ai.version>1.0.0</spring-ai.version>
+		<lombok.version>1.18.30</lombok.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -58,7 +60,13 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.30</version>
+			<version>${lombok.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruct.version}</version>
 		</dependency>
 
 		<dependency>
@@ -129,6 +137,25 @@
 					<user>postgres</user>
 					<password>Ab3dRfGh7J9K</password>
 					<url>jdbc:postgresql://localhost:5432/ulingua-dev-db</url>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 		</plugins>

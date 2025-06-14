@@ -29,18 +29,18 @@ public class ProfileHandler implements CommandHandler {
             String message = localMessages.get("message.register_required");
             this.telegramUtils.sendMessage(userId, message, false);
         } else {
-            LanguageDto nativeLang = this.languageService.getByCountryCode(currentUserDto.getNativeLang());
-            LanguageDto currentLang = this.languageService.getByCountryCode(currentUserDto.getCurrentLang());
+            LanguageDto nativeLang = this.languageService.getByCountryCode(currentUserDto.nativeLang());
+            LanguageDto currentLang = this.languageService.getByCountryCode(currentUserDto.currentLang());
             int langTotalCount = this.languageService.getTotalCount() - 1; // except the user's native language
 
             List<String> list = new ArrayList<>();
-            currentUserDto.getLanguages()
-                .forEach(languageDto -> list.add(languageDto.getUnicode()));
+            currentUserDto.languages()
+                .forEach(languageDto -> list.add(languageDto.unicode()));
 
             String userInfo = localMessages.get("user.info").formatted(
-                currentUserDto.getCreatedAt(),
-                nativeLang.getUnicode(),
-                currentLang.getUnicode(),
+                currentUserDto.createdAt(),
+                nativeLang.unicode(),
+                currentLang.unicode(),
                 list
             );
 
@@ -57,8 +57,8 @@ public class ProfileHandler implements CommandHandler {
         int langTotalCount) {
 
         List<ButtonData> buttons = new ArrayList<>();
-        if (currentUserDto.getLanguages().size() > 1) {
-            if (langTotalCount > currentUserDto.getLanguages().size()) {
+        if (currentUserDto.languages().size() > 1) {
+            if (langTotalCount > currentUserDto.languages().size()) {
                 buttons.add(new ButtonData(
                     localMessages.get("button.add_language"),
                     CallbackCommandEnum.ADD_LANG,
