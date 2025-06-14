@@ -20,12 +20,6 @@ public class LocaleUtils {
                     return Locale.ITALIAN;
                 case "JP":
                     return new Locale("ja", "JP");
-                case "PL":
-                    return new Locale("pl");
-                case "PT":
-                    return new Locale("pt");
-                case "TR":
-                    return new Locale("tr");
                 case "UA":
                     return new Locale("uk", "UA");
             }

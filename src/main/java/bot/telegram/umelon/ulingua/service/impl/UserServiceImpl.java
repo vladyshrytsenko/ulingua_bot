@@ -31,31 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(User user) {
-        Optional<User> existingUserOpt = this.userRepository.findById(user.getId());
-        User savedUser;
-
-        if (existingUserOpt.isPresent()) {
-            User existingUser = existingUserOpt.get();
-
-            existingUser.setFirstname(user.getFirstname());
-            existingUser.setLastname(user.getLastname());
-            existingUser.setUsername(user.getUsername());
-
-            if (user.getNativeLang() != null) {
-                existingUser.setNativeLang(user.getNativeLang());
-            }
-            if (user.getCurrentLang() != null) {
-                existingUser.setCurrentLang(user.getCurrentLang());
-            }
-            if (user.getLanguages() != null) {
-                existingUser.setLanguages(user.getLanguages());
-            }
-
-            savedUser = this.userRepository.save(existingUser);
-        } else {
-            savedUser = this.userRepository.save(user);
-        }
-
+        User savedUser = this.userRepository.save(user);
         return UserMapper.MAPPER.toDto(savedUser);
     }
 
@@ -64,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public void addUserLanguage(long userId, long languageId) {
         LanguageDto foundLanguageDto = this.languageService.getById(languageId);
 
-        UserDto currentUser = getById(userId);
+        UserDto currentUser = this.getById(userId);
         if (currentUser.languages() == null) {
             currentUser = currentUser.toBuilder()
                 .languages(new HashSet<>())
@@ -76,7 +52,7 @@ public class UserServiceImpl implements UserService {
             .build();
 
         User currentUserEntity = UserMapper.MAPPER.toEntity(currentUser);
-        save(currentUserEntity);
+        this.save(currentUserEntity);
     }
 
     @Override
@@ -84,7 +60,7 @@ public class UserServiceImpl implements UserService {
     public void removeUserLanguage(long userId, long languageId) {
         LanguageDto foundLanguageDto = this.languageService.getById(languageId);
 
-        UserDto currentUser = getById(userId);
+        UserDto currentUser = this.getById(userId);
         currentUser.languages().remove(foundLanguageDto);
 
         if (foundLanguageDto.countryCode().equals(currentUser.currentLang())) {
@@ -96,7 +72,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User currentUserEntity = UserMapper.MAPPER.toEntity(currentUser);
-        save(currentUserEntity);
+        this.save(currentUserEntity);
     }
 
     @Override

@@ -9,44 +9,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class WordServiceImpl implements WordService {
 
     @Override
     public WordDto getById(long id) {
-        Word word = wordRepository.findById(id).orElse(null);
+        Word word = this.wordRepository.findById(id).orElse(null);
         return word != null ? WordMapper.MAPPER.toDto(word) : null;
     }
 
     @Override
     public Word getByOriginal(String original) {
-        return wordRepository.findByOriginalIgnoreCase(original).orElse(null);
+        return this.wordRepository.findByOriginalIgnoreCase(original).orElse(null);
     }
 
     @Override
     @Transactional
     public WordDto create(Word word) {
-        Optional<Word> existingWordOptional = wordRepository.findByOriginalIgnoreCase(word.getOriginal());
-        Word savedWord;
-
-        if (existingWordOptional.isPresent()) {
-            Word existingWord = existingWordOptional.get();
-            existingWord.setOriginal(word.getOriginal());
-
-            savedWord = wordRepository.save(existingWord);
-
-        } else {
-            Word newWord = Word.builder()
-                .original(word.getOriginal())
-                .language(word.getLanguage())
-                .build();
-
-            savedWord = wordRepository.save(newWord);
-        }
-
+        Word savedWord = this.wordRepository.save(word);
         return WordMapper.MAPPER.toDto(savedWord);
     }
 
