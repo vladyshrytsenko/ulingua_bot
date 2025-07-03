@@ -8,6 +8,7 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
 import bot.telegram.umelon.ulingua.model.entity.UserWord;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
+import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.service.UserWordService;
 import bot.telegram.umelon.ulingua.service.WordService;
@@ -45,14 +46,18 @@ public class TrainHandler implements CommandHandler {
             });
 
             StringBuilder sb = new StringBuilder();
-            wordCountByLanguage.forEach((language, count) -> {
-                sb.append(language.unicode()).append(" ").append(count).append("\n");
-            });
+            wordCountByLanguage.forEach(
+                (language, count) -> sb.append(language.unicode()).append(" ").append(count).append("\n")
+            );
+            LanguageDto currentLang = this.languageService.getByCountryCode(currentUserDto.currentLang());
+
             String trainInfo = String.format("""
                 Слiв вивчено:
                 %s
+                Поточна мова для вивчення: %s
                 Обмеження на сьогодні: %d
-                """, sb, currentUserDto.dailyLimit());
+                """, sb, currentLang.unicode(), currentUserDto.dailyLimit()
+            );
             List<ButtonData> buttons = getButtonDataList(currentUserDto, localMessages);
 
             telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
@@ -69,6 +74,7 @@ public class TrainHandler implements CommandHandler {
     private final UserService userService;
     private final UserWordService userWordService;
     private final WordService wordService;
+    private final LanguageService languageService;
     private final TelegramUtils telegramUtils;
 }
 
