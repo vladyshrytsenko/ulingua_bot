@@ -46,7 +46,7 @@ public class TrainHandler implements CommandHandler {
 
             StringBuilder sb = new StringBuilder();
             wordCountByLanguage.forEach((language, count) -> {
-                sb.append(language.unicode()).append(" - ").append(count).append("\n");
+                sb.append(language.unicode()).append(" ").append(count).append("\n");
             });
             String trainInfo = String.format("""
                 Слiв вивчено:

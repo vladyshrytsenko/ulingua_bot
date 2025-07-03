@@ -3,15 +3,15 @@ package bot.telegram.umelon.ulingua.handler.callback;
 import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.model.ButtonData;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
+import bot.telegram.umelon.ulingua.model.dto.GeneratedWordHistoryDto;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.dto.WordDto;
-import bot.telegram.umelon.ulingua.model.entity.Word;
+import bot.telegram.umelon.ulingua.model.entity.redis.GeneratedWordHistory;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.model.enums.UserWordProgress;
-import bot.telegram.umelon.ulingua.model.mapper.LanguageMapper;
-import bot.telegram.umelon.ulingua.model.mapper.WordMapper;
+import bot.telegram.umelon.ulingua.service.GeneratedWordHistoryService;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
@@ -23,10 +23,11 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.message.MaybeInaccessibleMessage;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum.*;
-import static java.lang.String.format;
 
 @Component
 @RequiredArgsConstructor
@@ -45,19 +46,15 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
             if (this.userWordService.isDailyLimitExceeded(currentUser.id(), dailyLimit)) {
                 this.telegramUtils.sendMessage(currentUser.id(), "Daily limit exceeded!", false);
             } else {
-                String chatCompletion = this.generativeAiService.chatCompletion(
-                    AiProvider.GEMINI, format(
-                    "I am learning %s. Give me exactly one commonly used word in this language to learn, " +
-                    "with no additional context or explanation. Respond with only the word, " +
-                    "and do not include a period at the end.",
-                    currentUser.currentLang()
-                ));
+                this.prepareWordHistory(currentUser);
 
-                List<ButtonData> buttons = getButtonDataList(chatCompletion);
+                GeneratedWordHistoryDto wordFirst = this.generatedWordHistoryService.findFirstByCountryCode(currentUser.currentLang());
+
+                List<ButtonData> buttons = getButtonDataList(wordFirst.original());
                 this.telegramUtils.sendEditMessageTextWithInlineKeyboard(
                     message.getChatId(),
                     message.getMessageId(),
-                    chatCompletion,
+                    wordFirst.original(),
                     buttons
                 );
             }
@@ -78,6 +75,9 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                 wordByOriginal.id(),
                 UserWordProgress.KNEW
             );
+
+            this.generatedWordHistoryService.deleteByOriginal(wordStr);
+            this.prepareWordHistory(currentUser);
 
             this.telegramUtils.sendDeleteMessageRequest(message.getChatId(), message.getMessageId());
 
@@ -101,6 +101,9 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                 UserWordProgress.STUDYING
             );
 
+            this.generatedWordHistoryService.deleteByOriginal(wordStr);
+            this.prepareWordHistory(currentUser);
+
             callbackQuery.setData(RANDOM_NEW_WORD.getValue());
             this.handle(callbackQuery, localMessages);
 
@@ -121,8 +124,41 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                 UserWordProgress.NOT_INTERESTED
             );
 
+            this.generatedWordHistoryService.deleteByOriginal(wordStr);
+            this.prepareWordHistory(currentUser);
+
             callbackQuery.setData(RANDOM_NEW_WORD.getValue());
             this.handle(callbackQuery, localMessages);
+        }
+    }
+
+    private void prepareWordHistory(UserDto currentUser) {
+        List<GeneratedWordHistoryDto> generatedWords = this.generatedWordHistoryService.findAllByCountryCode(currentUser.currentLang());
+        if (generatedWords.isEmpty()) {
+            String chatCompletion = this.generativeAiService.chatCompletion(
+                AiProvider.GEMINI,
+                "I am learning %s. ".formatted(currentUser.currentLang()) +
+                "Give me a list of 20 **very commonly used**, everyday words that are **concrete and practical** " +
+                "(like basic nouns, verbs, or adjectives) that a beginner would find **immediately useful**. " +
+                "No explanation, translation, or additional context. Respond only with a list in this format: word1, word2, ..., word20"
+            );
+
+            List<String> list = Arrays.stream(
+                    chatCompletion
+                        .replace("\n", "")
+                        .split(","))
+                .map(String::trim)
+                .toList();
+
+            List<GeneratedWordHistory> entities = new ArrayList<>();
+            list.forEach(word -> {
+                GeneratedWordHistory entity = new GeneratedWordHistory();
+                entity.setUserId(currentUser.id());
+                entity.setOriginal(word);
+                entity.setCountryCode(currentUser.currentLang());
+                entities.add(entity);
+            });
+            this.generatedWordHistoryService.saveAll(entities);
         }
     }
 
@@ -149,4 +185,5 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
     private final UserWordService userWordService;
     private final WordService wordService;
     private final LanguageService languageService;
+    private final GeneratedWordHistoryService generatedWordHistoryService;
 }

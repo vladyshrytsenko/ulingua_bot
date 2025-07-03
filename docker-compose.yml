@@ -12,5 +12,15 @@ services:
     volumes:
       - ulingua-postgres-dev-data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:latest
+    container_name: ulingua-redis-dev
+    command: ["redis-server", "--requirepass", "Ab3dRfGh7J9K"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ulingua-redis-dev-data:/data
+
 volumes:
   ulingua-postgres-dev-data:
+  ulingua-redis-dev-data:
