@@ -7,8 +7,11 @@ import bot.telegram.umelon.ulingua.service.UserWordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,14 +19,17 @@ public class UserWordServiceImpl implements UserWordService {
 
     @Override
     public void addWordForUser(long userId, long wordId, UserWordProgress progress) {
-        UserWord userWord = UserWord.builder()
-            .userId(userId)
-            .wordId(wordId)
-            .progress(progress)
-            .createdAt(LocalDateTime.now())
-            .build();
+        Optional<UserWord> userWordOptional = this.userWordRepository.findByUserIdAndWordId(userId, wordId);
 
-        this.userWordRepository.save(userWord);
+        if (userWordOptional.isEmpty()) {
+            UserWord userWord = UserWord.builder()
+                .userId(userId)
+                .wordId(wordId)
+                .progress(progress)
+                .createdAt(LocalDateTime.now())
+                .build();
+            this.userWordRepository.save(userWord);
+        }
     }
 
     @Override
@@ -33,10 +39,10 @@ public class UserWordServiceImpl implements UserWordService {
 
     @Override
     public boolean isDailyLimitExceeded(long userId, long userLimit) {
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime nextTime = currentTime.plusDays(1);
+        LocalDateTime currentTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime nextTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
 
-        long countPerDay = userWordRepository.countByUserIdAndCreatedAtBetween(userId, currentTime, nextTime);
+        long countPerDay = userWordRepository.countByUserIdAndProgressAndCreatedAtBetween(userId, UserWordProgress.STUDYING, currentTime, nextTime);
         return countPerDay >= userLimit;
     }
 
