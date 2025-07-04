@@ -26,6 +26,7 @@ import org.telegram.telegrambots.meta.api.objects.message.MaybeInaccessibleMessa
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import static bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum.*;
 
@@ -135,20 +136,36 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
     private void prepareWordHistory(UserDto currentUser) {
         List<GeneratedWordHistoryDto> generatedWords = this.generatedWordHistoryService.findAllByCountryCode(currentUser.currentLang());
         if (generatedWords.isEmpty()) {
+            List<String> userWords = userWordService.findAll(currentUser.id()).stream()
+                .map(uw -> {
+                    WordDto word = wordService.getById(uw.getWordId());
+                    return word.original();
+                }).toList();
+
+            int maxKnownWords = 200;
+            int leftLimit = userWords.size() > maxKnownWords ? new Random().nextInt(userWords.size() - maxKnownWords + 1) : 0;
+            int rightLimit = Math.min(leftLimit + maxKnownWords, userWords.size());
+            List<String> userWordSimplifiedList = userWords.subList(leftLimit, rightLimit);
+
             String chatCompletion = this.generativeAiService.chatCompletion(
                 AiProvider.GEMINI,
                 "I am learning %s. ".formatted(currentUser.currentLang()) +
-                "Give me a list of 20 **very commonly used**, everyday words that are **concrete and practical** " +
-                "(like basic nouns, verbs, or adjectives) that a beginner would find **immediately useful**. " +
-                "No explanation, translation, or additional context. Respond only with a list in this format: word1, word2, ..., word20"
+                "Below is a sample of words I already know: %s. ".formatted(userWordSimplifiedList) +
+                "Based on that, give me a new list of 20 **very commonly used**, everyday words that are **concrete and practical** " +
+                "(such as basic nouns, verbs, or adjectives) that a beginner would find **immediately useful**. " +
+                "Avoid repeating any of the words I already know. No explanation, translation, or additional context. " +
+                "Respond only with a comma-separated list of exactly 20 words and nothing else. " +
+                "Example of a valid response: word1, word2, ..., word20"
             );
 
-            List<String> list = Arrays.stream(
+            List<String> list = new ArrayList<>(Arrays.stream(
                     chatCompletion
                         .replace("\n", "")
                         .split(","))
                 .map(String::trim)
-                .toList();
+                .toList());
+
+            list.removeIf(o -> userWords.stream().anyMatch(u -> u.equalsIgnoreCase(o)));
 
             List<GeneratedWordHistory> entities = new ArrayList<>();
             list.forEach(word -> {
@@ -158,6 +175,11 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                 entity.setCountryCode(currentUser.currentLang());
                 entities.add(entity);
             });
+
+            if (entities.isEmpty()) {
+                this.prepareWordHistory(currentUser);
+            }
+
             this.generatedWordHistoryService.saveAll(entities);
         }
     }
