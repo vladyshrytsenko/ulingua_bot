@@ -38,10 +38,10 @@ public class CallbackHandlerFactory {
         } else if (callbackData.endsWith(WRITING_SENTENCE_DISCUSS.getValue())) {
             return writingSentenceDiscussOF.getObject();
 
-        } else if (callbackData.endsWith(RANDOM_NEW_WORD.getValue())
-                   || callbackData.endsWith(RANDOM_NEW_WORD_ALREADY_KNOW.getValue())
-                   || callbackData.endsWith(RANDOM_NEW_WORD_FOR_STUDY.getValue())
-                   || callbackData.endsWith(RANDOM_NEW_WORD_NOT_INTERESTING.getValue())) {
+        } else if (callbackData.endsWith(RANDOM_NEW_WORD.getValue()) ||
+                   callbackData.endsWith(RANDOM_NEW_WORD_ALREADY_KNOWN.getValue()) ||
+                   callbackData.endsWith(RANDOM_NEW_WORD_TO_LEARN.getValue()) ||
+                   callbackData.endsWith(RANDOM_NEW_WORD_NOT_INTERESTING.getValue())) {
             return randomNewWordOF.getObject();
 
         } else if (callbackData.endsWith(CHANGE_DAILY_LIMIT.getValue())) {
