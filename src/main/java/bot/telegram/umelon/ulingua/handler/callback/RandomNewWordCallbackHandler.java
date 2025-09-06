@@ -60,9 +60,9 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                 );
             }
 
-        } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_ALREADY_KNOW.getValue())) {
-            String wordStr = RANDOM_NEW_WORD_ALREADY_KNOW.getDescription();
-            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_ALREADY_KNOW.getDescription());
+        } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_ALREADY_KNOWN.getValue())) {
+            String wordStr = RANDOM_NEW_WORD_ALREADY_KNOWN.getDescription();
+            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_ALREADY_KNOWN.getDescription());
 
             if (wordByOriginal == null) {
                 WordDto wordRequest = WordDto.builder()
@@ -71,11 +71,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                     .build();
                 wordByOriginal = this.wordService.create(wordRequest);
             }
-            this.userWordService.addWordForUser(
-                message.getChatId(),
-                wordByOriginal.id(),
-                UserWordProgress.KNEW
-            );
+            this.userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.KNOWN);
 
             this.generatedWordHistoryService.deleteByOriginal(wordStr);
             this.prepareWordHistory(currentUser);
@@ -85,9 +81,9 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
             callbackQuery.setData(RANDOM_NEW_WORD.getValue());
             this.handle(callbackQuery, localMessages);
 
-        } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_FOR_STUDY.getValue())) {
-            String wordStr = RANDOM_NEW_WORD_FOR_STUDY.getDescription();
-            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_FOR_STUDY.getDescription());
+        } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_TO_LEARN.getValue())) {
+            String wordStr = RANDOM_NEW_WORD_TO_LEARN.getDescription();
+            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_TO_LEARN.getDescription());
 
             if (wordByOriginal == null) {
                 WordDto wordRequest = WordDto.builder()
@@ -96,11 +92,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                     .build();
                 wordByOriginal = this.wordService.create(wordRequest);
             }
-            this.userWordService.addWordForUser(
-                message.getChatId(),
-                wordByOriginal.id(),
-                UserWordProgress.STUDYING
-            );
+            this.userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.LEARNING);
 
             this.generatedWordHistoryService.deleteByOriginal(wordStr);
             this.prepareWordHistory(currentUser);
@@ -119,11 +111,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                     .build();
                 wordByOriginal = this.wordService.create(wordRequest);
             }
-            this.userWordService.addWordForUser(
-                message.getChatId(),
-                wordByOriginal.id(),
-                UserWordProgress.NOT_INTERESTED
-            );
+            this.userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.NOT_INTERESTING);
 
             this.generatedWordHistoryService.deleteByOriginal(wordStr);
             this.prepareWordHistory(currentUser);
@@ -185,10 +173,10 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
     }
 
     private List<ButtonData> getButtonDataList(String word) {
-        CallbackCommandEnum randomNewWordAlreadyKnow = RANDOM_NEW_WORD_ALREADY_KNOW;
+        CallbackCommandEnum randomNewWordAlreadyKnow = RANDOM_NEW_WORD_ALREADY_KNOWN;
         randomNewWordAlreadyKnow.setDescription(word);
 
-        CallbackCommandEnum randomNewWordForStudy = RANDOM_NEW_WORD_FOR_STUDY;
+        CallbackCommandEnum randomNewWordForStudy = RANDOM_NEW_WORD_TO_LEARN;
         randomNewWordForStudy.setDescription(word);
 
         CallbackCommandEnum randomNewWordNotInteresting = RANDOM_NEW_WORD_NOT_INTERESTING;

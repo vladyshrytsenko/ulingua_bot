@@ -16,8 +16,8 @@ public enum CallbackCommandEnum {
     LIMIT_IS_TEN("10_change_daily_limit"),
     LIMIT_IS_FIFTEEN("15_change_daily_limit"),
     RANDOM_NEW_WORD("_random_new_word"),
-    RANDOM_NEW_WORD_ALREADY_KNOW("_random_new_word_already_know"),
-    RANDOM_NEW_WORD_FOR_STUDY("_random_new_word_for_study"),
+    RANDOM_NEW_WORD_ALREADY_KNOWN("_random_new_word_already_known"),
+    RANDOM_NEW_WORD_TO_LEARN("_random_new_word_to_learn"),
     RANDOM_NEW_WORD_NOT_INTERESTING("_random_new_word_not_interesting");
 
     private final String value;

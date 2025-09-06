@@ -42,7 +42,7 @@ public class UserWordServiceImpl implements UserWordService {
         LocalDateTime currentTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime nextTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
 
-        long countPerDay = userWordRepository.countByUserIdAndProgressAndCreatedAtBetween(userId, UserWordProgress.STUDYING, currentTime, nextTime);
+        long countPerDay = userWordRepository.countByUserIdAndProgressAndCreatedAtBetween(userId, UserWordProgress.LEARNING, currentTime, nextTime);
         return countPerDay >= userLimit;
     }
 
