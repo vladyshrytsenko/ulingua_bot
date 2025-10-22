@@ -14,7 +14,7 @@ import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.service.UserWordService;
 import bot.telegram.umelon.ulingua.service.WordService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -78,7 +78,7 @@ public class AwaitingNewWordHandler implements StateHandler {
             JSON Output:
             """;
 
-        String chatCompletion = this.generativeAiService.chatCompletion(
+        String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI, promptTemplate.formatted(currentLang, messageText, currentLang)
         );
 
@@ -87,7 +87,7 @@ public class AwaitingNewWordHandler implements StateHandler {
 
         JsonNode wordsJsonNode;
         try {
-            wordsJsonNode = this.objectMapper.readTree(chatCompletion);
+            wordsJsonNode = objectMapper.readTree(chatCompletion);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -124,48 +124,48 @@ public class AwaitingNewWordHandler implements StateHandler {
 
             List<String> mergedList = Stream.concat(knownList.stream(), learningList.stream()).toList();
             if (mergedList.isEmpty()) {
-                this.telegramUtils.sendMessage(userId, "Нажаль, нових слів не виявлено", true);
+                telegramUtil.sendMessage(userId, "Нажаль, нових слів не виявлено", true);
                 return;
             }
-            this.telegramUtils.sendMessage(
+            telegramUtil.sendMessage(
                 userId,
                 localMessages.get("message.adding_word_to_study_list").formatted(mergedList.toString()),
                 true
             );
 
-            LanguageDto countryCode = this.languageService.getByCountryCode(currentLang);
+            LanguageDto countryCode = languageService.getByCountryCode(currentLang);
 
             knownList.forEach(knownWord -> {
                 WordDto wordRequest = WordDto.builder()
                     .language(countryCode)
                     .original(knownWord)
                     .build();
-                WordDto createdWord = this.wordService.create(wordRequest);
+                WordDto createdWord = wordService.create(wordRequest);
 
-                this.userWordService.addWordForUser(currentUser.id(), createdWord.id(), UserWordProgress.KNOWN);
+                userWordService.addWordForUser(currentUser.id(), createdWord.id(), UserWordProgress.KNOWN);
             });
             learningList.forEach(learningWord -> {
                 WordDto wordRequest = WordDto.builder()
                     .language(countryCode)
                     .original(learningWord)
                     .build();
-                WordDto createdWord = this.wordService.create(wordRequest);
+                WordDto createdWord = wordService.create(wordRequest);
 
-                this.userWordService.addWordForUser(currentUser.id(), createdWord.id(), UserWordProgress.LEARNING);
+                userWordService.addWordForUser(currentUser.id(), createdWord.id(), UserWordProgress.LEARNING);
             });
 
-            this.telegramUtils.sendMessage(userId, localMessages.get("message.done"), true);
+            telegramUtil.sendMessage(userId, localMessages.get("message.done"), true);
         } else {
-            this.telegramUtils.sendMessage(userId, localMessages.get("message.word_not_exist"), true);
+            telegramUtil.sendMessage(userId, localMessages.get("message.word_not_exist"), true);
         }
 
-        this.userService.setUserState(userId, UserState.AWAITING_NEW_WORD);
+        userService.setUserState(userId, UserState.AWAITING_NEW_WORD);
     }
 
     private final UserService userService;
     private final WordService wordService;
     private final LanguageService languageService;
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
     private final GenerativeAiService generativeAiService;
     private final ObjectMapper objectMapper;
     private final UserWordService userWordService;

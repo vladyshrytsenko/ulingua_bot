@@ -1,11 +1,11 @@
-package bot.telegram.umelon.ulingua.utils;
+package bot.telegram.umelon.ulingua.util;
 
 import lombok.NoArgsConstructor;
 
 import java.util.Locale;
 
 @NoArgsConstructor
-public class LocaleUtils {
+public class LocaleUtil {
 
     public static Locale getLocale(String localization) {
         if (localization != null) {

@@ -17,13 +17,13 @@ public class GeneratedWordHistoryServiceImpl implements GeneratedWordHistoryServ
 
     @Override
     public GeneratedWordHistoryDto findFirstByCountryCode(String countryCode) {
-        GeneratedWordHistory word = this.generatedWordHistoryRepository.findFirstByCountryCode(countryCode).orElse(null);
+        GeneratedWordHistory word = generatedWordHistoryRepository.findFirstByCountryCode(countryCode).orElse(null);
         return word != null ? GeneratedWordHistoryMapper.MAPPER.toDto(word): null;
     }
 
     @Override
     public List<GeneratedWordHistoryDto> findAllByCountryCode(String countryCode) {
-        Iterable<GeneratedWordHistory> wordHistoryIterable = this.generatedWordHistoryRepository.findAllByCountryCode(countryCode);
+        Iterable<GeneratedWordHistory> wordHistoryIterable = generatedWordHistoryRepository.findAllByCountryCode(countryCode);
 
         return StreamSupport.stream(wordHistoryIterable.spliterator(), false)
             .map(GeneratedWordHistoryMapper.MAPPER::toDto)
@@ -32,13 +32,13 @@ public class GeneratedWordHistoryServiceImpl implements GeneratedWordHistoryServ
 
     @Override
     public void saveAll(List<GeneratedWordHistory> entities) {
-        this.generatedWordHistoryRepository.saveAll(entities);
+        generatedWordHistoryRepository.saveAll(entities);
     }
 
     @Override
     public void deleteByOriginal(String original) {
-        this.generatedWordHistoryRepository.findByOriginal(original)
-            .ifPresent(this.generatedWordHistoryRepository::delete);
+        generatedWordHistoryRepository.findByOriginal(original)
+            .ifPresent(generatedWordHistoryRepository::delete);
     }
 
     private final GeneratedWordHistoryRepository generatedWordHistoryRepository;

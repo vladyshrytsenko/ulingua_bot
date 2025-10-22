@@ -11,7 +11,7 @@ import bot.telegram.umelon.ulingua.model.dto.LocalizationDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.MenuEnum;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
-import bot.telegram.umelon.ulingua.utils.LocaleUtils;
+import bot.telegram.umelon.ulingua.util.LocaleUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,9 +54,9 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
         }};
 
         try {
-            this.telegramClient.execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
+            telegramClient.execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -71,11 +71,11 @@ public class TelegramBotService implements SpringLongPollingBot, LongPollingSing
             UserState userState = userService.getUserState(userId);
 
             Locale locale;
-            LocalizationDto localizationDto = this.localizationService.getByChatId(userId);
+            LocalizationDto localizationDto = localizationService.getByChatId(userId);
             if (localizationDto != null) {
-                locale = LocaleUtils.getLocale(localizationDto.langCode());
+                locale = LocaleUtil.getLocale(localizationDto.langCode());
             } else {
-                locale = LocaleUtils.getLocale(Locale.ENGLISH.getCountry());
+                locale = LocaleUtil.getLocale(Locale.ENGLISH.getCountry());
             }
             localMessages = new LocalMessages(locale);
 

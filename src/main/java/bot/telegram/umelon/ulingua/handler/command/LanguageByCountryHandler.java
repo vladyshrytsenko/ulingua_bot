@@ -4,7 +4,7 @@ import bot.telegram.umelon.ulingua.handler.CommandHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.service.UserService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -20,10 +20,10 @@ public class LanguageByCountryHandler implements CommandHandler {
         String message = localMessages.get("message.select_language_by_country");
         userService.setUserState(userId, UserState.AWAITING_COUNTRY);
 
-        telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-        telegramUtils.sendMessage(userId, message, true);
+        telegramUtil.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+        telegramUtil.sendMessage(userId, message, true);
     }
 
     private final UserService userService;
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
 }

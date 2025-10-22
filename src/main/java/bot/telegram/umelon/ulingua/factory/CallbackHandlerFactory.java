@@ -4,6 +4,7 @@ import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.AddLangCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.AddNativeLangCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.DailyLimitCallbackHandler;
+import bot.telegram.umelon.ulingua.handler.callback.LanguageQuizCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.LocalizationCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.RandomNewWordCallbackHandler;
 import bot.telegram.umelon.ulingua.handler.callback.RemoveLangCallbackHandler;
@@ -38,14 +39,22 @@ public class CallbackHandlerFactory {
         } else if (callbackData.endsWith(WRITING_SENTENCE_DISCUSS.getValue())) {
             return writingSentenceDiscussOF.getObject();
 
-        } else if (callbackData.endsWith(RANDOM_NEW_WORD.getValue()) ||
-                   callbackData.endsWith(RANDOM_NEW_WORD_ALREADY_KNOWN.getValue()) ||
-                   callbackData.endsWith(RANDOM_NEW_WORD_TO_LEARN.getValue()) ||
-                   callbackData.endsWith(RANDOM_NEW_WORD_NOT_INTERESTING.getValue())) {
+        } else if (
+            callbackData.endsWith(RANDOM_NEW_WORD.getValue()) ||
+            callbackData.endsWith(RANDOM_NEW_WORD_ALREADY_KNOWN.getValue()) ||
+            callbackData.endsWith(RANDOM_NEW_WORD_TO_LEARN.getValue()) ||
+            callbackData.endsWith(RANDOM_NEW_WORD_NOT_INTERESTING.getValue())
+        ) {
             return randomNewWordOF.getObject();
 
         } else if (callbackData.endsWith(CHANGE_DAILY_LIMIT.getValue())) {
             return dailyLimitOF.getObject();
+
+        } else if (
+            callbackData.endsWith(LANGUAGE_PROFICIENCY_TEST.getValue()) ||
+            callbackData.endsWith(LANGUAGE_PROFICIENCY_TEST_NEXT_QUESTION.getValue())
+        ) {
+            return languageQuizOF.getObject();
 
         } else {
             throw new IllegalArgumentException("Unknown callback: " + callbackData);
@@ -60,4 +69,5 @@ public class CallbackHandlerFactory {
     private final ObjectFactory<WritingSentenceDiscussCallbackHandler> writingSentenceDiscussOF;
     private final ObjectFactory<RandomNewWordCallbackHandler> randomNewWordOF;
     private final ObjectFactory<DailyLimitCallbackHandler> dailyLimitOF;
+    private final ObjectFactory<LanguageQuizCallbackHandler> languageQuizOF;
 }

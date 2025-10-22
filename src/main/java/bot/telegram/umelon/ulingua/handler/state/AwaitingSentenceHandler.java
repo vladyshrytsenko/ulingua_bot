@@ -7,7 +7,7 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,6 @@ public class AwaitingSentenceHandler implements StateHandler {
 
     @Override
     public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
-
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI, format(
             "Check the sentence '%s' written in %s. If there are any errors, please explain them in %s, keeping the original words with mistakes in %s.",
@@ -33,9 +32,9 @@ public class AwaitingSentenceHandler implements StateHandler {
         List<ButtonData> buttons = List.of(
                 new ButtonData(localMessages.get("button.discuss"), sentenceDiscuss, 1)
             );
-        telegramUtils.sendInlineKeyboard(userId, chatCompletion, buttons);
+        telegramUtil.sendInlineKeyboard(userId, chatCompletion, buttons);
     }
 
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
     private final GenerativeAiService generativeAiService;
 }

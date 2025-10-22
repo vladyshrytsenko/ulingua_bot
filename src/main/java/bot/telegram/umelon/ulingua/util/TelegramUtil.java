@@ -1,4 +1,4 @@
-package bot.telegram.umelon.ulingua.utils;
+package bot.telegram.umelon.ulingua.util;
 
 import bot.telegram.umelon.ulingua.model.ButtonData;
 import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
@@ -33,7 +33,7 @@ import static java.lang.Math.*;
 
 @Component
 @RequiredArgsConstructor
-public class TelegramUtils {
+public class TelegramUtil {
 
     public void sendMessage(long userId, String text, boolean isCancellable) {
         SendMessage sendMessage = SendMessage.builder()
@@ -57,11 +57,44 @@ public class TelegramUtils {
         }
 
         try {
-            this.telegramClient.execute(sendMessage);
+            telegramClient.execute(sendMessage);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
+
+    public void sendMessageWithInlineKeyboard(long userId, String text, List<String> keyboardTextList, CallbackCommandEnum command) {
+        SendMessage sendMessage = SendMessage.builder()
+            .chatId(userId)
+            .text(text)
+            .build();
+
+        List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
+
+        for (String keyboardText : keyboardTextList) {
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(keyboardText)
+                .callbackData(keyboardText.concat(command.getValue()))
+                .build();
+
+            InlineKeyboardRow row = new InlineKeyboardRow();
+            row.add(button);
+            keyboardRows.add(row);
+        }
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = InlineKeyboardMarkup.builder()
+            .keyboard(keyboardRows)
+            .build();
+
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            telegramClient.execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 
     public void sendEditMessageText(long userId, long messageId, String text){
         EditMessageText message = EditMessageText.builder()
@@ -71,7 +104,7 @@ public class TelegramUtils {
             .build();
 
         try {
-            this.telegramClient.execute(message);
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.getMessage();
         }
@@ -84,7 +117,7 @@ public class TelegramUtils {
             .build();
 
         try {
-            this.telegramClient.execute(deleteMessage);
+            telegramClient.execute(deleteMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -135,9 +168,43 @@ public class TelegramUtils {
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
-            this.telegramClient.execute(message);
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void sendEditMessageWithInlineKeyboard(long userId, long messageId, String text, List<String> keyboardTextList, CallbackCommandEnum command) {
+        EditMessageText editMessage = EditMessageText.builder()
+            .chatId(userId)
+            .messageId(Math.toIntExact(messageId))
+            .text(text)
+            .build();
+
+        List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
+
+        for (String keyboardText : keyboardTextList) {
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(keyboardText)
+                .callbackData(keyboardText.concat(command.getValue()))
+                .build();
+
+            InlineKeyboardRow row = new InlineKeyboardRow();
+            row.add(button);
+            keyboardRows.add(row);
+        }
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = InlineKeyboardMarkup.builder()
+            .keyboard(keyboardRows)
+            .build();
+
+        editMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            telegramClient.execute(editMessage);
+        } catch (TelegramApiException e) {
+            // Якщо не вдається відредагувати — відправляємо нове повідомлення
+            this.sendMessageWithInlineKeyboard(userId, text, keyboardTextList, command);
         }
     }
 
@@ -187,7 +254,7 @@ public class TelegramUtils {
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
-            this.telegramClient.execute(message);
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -242,7 +309,7 @@ public class TelegramUtils {
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
-            this.telegramClient.execute(message);
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -278,7 +345,7 @@ public class TelegramUtils {
         message.setReplyMarkup(markupInLine);
 
         try {
-            this.telegramClient.execute(message);
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             this.sendMessageTextWithInlineKeyboard(userId, text, buttonDataList);
         }
@@ -313,7 +380,7 @@ public class TelegramUtils {
         message.setReplyMarkup(markupInLine);
 
         try {
-            this.telegramClient.execute(message);
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -348,7 +415,7 @@ public class TelegramUtils {
         message.setReplyMarkup(markupInLine);
 
         try {
-            this.telegramClient.execute(message);
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

@@ -4,7 +4,7 @@ import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.entity.Language;
 import bot.telegram.umelon.ulingua.model.mapper.LanguageMapper;
 import bot.telegram.umelon.ulingua.repository.LanguageRepository;
-import bot.telegram.umelon.ulingua.utils.CountryFlagUtil;
+import bot.telegram.umelon.ulingua.util.CountryFlagUtil;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,46 +22,46 @@ public class LanguageServiceImpl implements LanguageService {
 
     @Override
     public void initializeLanguages() {
-        if (this.languageRepository.count() == 0) {
-            Map<String, String> countryMapping = this.countryFlagUtil.getCountryMapping();
+        if (languageRepository.count() == 0) {
+            Map<String, String> countryMapping = countryFlagUtil.getCountryMapping();
             List<Language> languageList = new ArrayList<>();
 
             countryMapping.forEach((country, unicode) -> {
                 languageList.add(new Language(country, unicode));
             });
 
-            this.languageRepository.saveAll(languageList);
+            languageRepository.saveAll(languageList);
         }
     }
 
     @Override
     public LanguageDto getById(long id) {
-        Language language = this.languageRepository.findById(id).orElse(null);
+        Language language = languageRepository.findById(id).orElse(null);
         return language != null ? LanguageMapper.MAPPER.toDto(language) : null;
     }
 
     @Override
     public List<LanguageDto> findAll() {
-        List<Language> languages = this.languageRepository.findAll();
+        List<Language> languages = languageRepository.findAll();
         return LanguageMapper.MAPPER.toDtoList(languages);
     }
 
 
     @Override
     public LanguageDto getByCountryCode(String code) {
-        Optional<Language> languageOptional = this.languageRepository.getByCountryCode(code);
+        Optional<Language> languageOptional = languageRepository.getByCountryCode(code);
         return languageOptional.map(LanguageMapper.MAPPER::toDto).orElse(null);
     }
 
     @Override
     public int getTotalCount() {
-        return Math.toIntExact(this.languageRepository.count());
+        return Math.toIntExact(languageRepository.count());
     }
 
     @Override
     public void deleteById(long id) {
-        if (this.languageRepository.existsById(id)) {
-            this.languageRepository.deleteById(id);
+        if (languageRepository.existsById(id)) {
+            languageRepository.deleteById(id);
         } else {
             throw new RuntimeException("Language not found");
         }

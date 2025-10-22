@@ -6,8 +6,8 @@ import bot.telegram.umelon.ulingua.model.dto.LanguageDto;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
-import bot.telegram.umelon.ulingua.utils.LocaleUtils;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.LocaleUtil;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -25,14 +25,14 @@ public class AlphabetHandler implements CommandHandler {
         UserDto currentUserDto = userService.getById(update.getMessage().getChatId());
         if (currentUserDto == null) {
             String message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message, false);
+            telegramUtil.sendMessage(userId, message, false);
         } else {
             LanguageDto byCountryCode = languageService.getByCountryCode(currentUserDto.currentLang());
-            Locale locale = LocaleUtils.getLocale(currentUserDto.currentLang());
+            Locale locale = LocaleUtil.getLocale(currentUserDto.currentLang());
             String alphabet = languageService.getAlphabet(locale);
 
-            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-            telegramUtils.sendMessage(
+            telegramUtil.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+            telegramUtil.sendMessage(
                 userId,
                 localMessages.get("message.alphabet_info").formatted(byCountryCode.unicode(), alphabet),
                 false
@@ -42,5 +42,5 @@ public class AlphabetHandler implements CommandHandler {
 
     private final UserService userService;
     private final LanguageService languageService;
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
 }
