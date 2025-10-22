@@ -5,7 +5,7 @@ import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,6 @@ public class AwaitingConversationHandler implements StateHandler {
 
     @Override
     public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
-
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI, format(
             "Since I am studying %s language, I want to talk to you about this topic: %s. " +
@@ -25,10 +24,10 @@ public class AwaitingConversationHandler implements StateHandler {
             currentUser.currentLang(), messageText, currentUser.currentLang()
         ));
 
-        telegramUtils.sendMessage(userId, chatCompletion, true);
+        telegramUtil.sendMessage(userId, chatCompletion, true);
     }
 
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
     private final GenerativeAiService generativeAiService;
 }
 

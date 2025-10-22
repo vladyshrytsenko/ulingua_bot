@@ -6,7 +6,7 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,6 @@ public class AwaitingSentenceDiscussHandler implements StateHandler {
 
     @Override
     public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
-
         String previousResponse = CallbackCommandEnum.WRITING_SENTENCE_DISCUSS.getDescription();
         if (previousResponse != null) {
             String discussionPrompt = generativeAiService.chatCompletion(
@@ -28,10 +27,10 @@ public class AwaitingSentenceDiscussHandler implements StateHandler {
                 previousResponse, messageText, currentUser.nativeLang()
             ));
 
-            telegramUtils.sendMessage(userId, discussionPrompt, true);
+            telegramUtil.sendMessage(userId, discussionPrompt, true);
         }
     }
 
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
     private final GenerativeAiService generativeAiService;
 }

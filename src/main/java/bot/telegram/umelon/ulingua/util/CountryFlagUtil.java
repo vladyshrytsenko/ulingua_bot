@@ -1,4 +1,4 @@
-package bot.telegram.umelon.ulingua.utils;
+package bot.telegram.umelon.ulingua.util;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

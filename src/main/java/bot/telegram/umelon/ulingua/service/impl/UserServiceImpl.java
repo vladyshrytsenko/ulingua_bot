@@ -25,14 +25,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(long id) {
-        User user = this.userRepository.findById(id).orElse(null);
+        User user = userRepository.findById(id).orElse(null);
         return user != null ? UserMapper.MAPPER.toDto(user) : null;
     }
 
     @Override
     public UserDto save(UserDto requestDto) {
         User entity = UserMapper.MAPPER.toEntity(requestDto);
-        User savedUser = this.userRepository.save(entity);
+        User savedUser = userRepository.save(entity);
 
         return UserMapper.MAPPER.toDto(savedUser);
     }
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeUserLanguage(long userId, long languageId) {
-        LanguageDto foundLanguageDto = this.languageService.getById(languageId);
+        LanguageDto foundLanguageDto = languageService.getById(languageId);
 
         UserDto currentUserDto = this.getById(userId);
         currentUserDto.languages().remove(foundLanguageDto);
@@ -75,32 +75,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setUserCurrentLanguage(long userId, String langCode) {
-        Optional<User> userOptional = this.userRepository.findById(userId);
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setCurrentLang(langCode);
 
-            this.userRepository.save(user);
+            userRepository.save(user);
         }
     }
 
     @Override
     public void setDailyLimit(long userId, byte dailyLimit) {
-        Optional<User> userOptional = this.userRepository.findById(userId);
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setDailyLimit(dailyLimit);
 
-            this.userRepository.save(user);
+            userRepository.save(user);
         }
     }
 
     public UserState getUserState(long userId) {
-        return userStateMap.getOrDefault(userId, null);
+        return this.userStateMap.getOrDefault(userId, null);
     }
 
     public void setUserState(long userId, UserState state) {
-        userStateMap.put(userId, state);
+        this.userStateMap.put(userId, state);
     }
 
     private final UserRepository userRepository;

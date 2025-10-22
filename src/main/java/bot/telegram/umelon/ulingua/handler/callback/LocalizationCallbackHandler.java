@@ -4,8 +4,8 @@ import bot.telegram.umelon.ulingua.handler.CallbackHandler;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.LocalizationService;
-import bot.telegram.umelon.ulingua.utils.LocaleUtils;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.LocaleUtil;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -18,7 +18,6 @@ public class LocalizationCallbackHandler implements CallbackHandler {
 
     @Override
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
-
         String callbackData = callbackQuery.getData();
         Long callbackChatId = callbackQuery.getMessage().getChatId();
         Integer callbackMessageId = callbackQuery.getMessage().getMessageId();
@@ -27,15 +26,15 @@ public class LocalizationCallbackHandler implements CallbackHandler {
             String selectedLang = callbackData.replace(CallbackCommandEnum.CHANGE_BOT_LANG.getValue(), "");
             localizationService.setBotLanguage(callbackChatId, selectedLang);
 
-            Locale locale = LocaleUtils.getLocale(selectedLang);
+            Locale locale = LocaleUtil.getLocale(selectedLang);
             localMessages = new LocalMessages(locale);
 
-            telegramUtils.sendEditMessageText(
+            telegramUtil.sendEditMessageText(
                 callbackChatId, callbackMessageId, localMessages.get("message.bot_language_changed")
             );
         }
     }
 
     private final LocalizationService localizationService;
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
 }

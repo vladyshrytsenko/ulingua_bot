@@ -5,7 +5,7 @@ import bot.telegram.umelon.ulingua.model.ButtonData;
 import bot.telegram.umelon.ulingua.model.LocalMessages;
 import bot.telegram.umelon.ulingua.model.enums.CallbackCommandEnum;
 import bot.telegram.umelon.ulingua.service.UserService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -29,7 +29,7 @@ public class DailyLimitCallbackHandler implements CallbackHandler {
         if (callbackData.equals(CallbackCommandEnum.CHANGE_DAILY_LIMIT.getValue())) {
             List<ButtonData> buttons = this.getButtonDataList();
 
-            this.telegramUtils.sendEditMessageTextWithInlineKeyboard(
+            telegramUtil.sendEditMessageTextWithInlineKeyboard(
                 callbackChatId,
                 callbackMessageId,
                 "Який лiмiт встановити?",
@@ -37,14 +37,14 @@ public class DailyLimitCallbackHandler implements CallbackHandler {
             );
 
         } else if (callbackData.equals(LIMIT_IS_FIVE.getValue())) {
-            this.userService.setDailyLimit(callbackChatId, (byte) 5);
-            telegramUtils.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
+            userService.setDailyLimit(callbackChatId, (byte) 5);
+            telegramUtil.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
         } else if (callbackData.equals(LIMIT_IS_TEN.getValue())) {
-            this.userService.setDailyLimit(callbackChatId, (byte) 10);
-            telegramUtils.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
+            userService.setDailyLimit(callbackChatId, (byte) 10);
+            telegramUtil.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
         } else if (callbackData.equals(LIMIT_IS_FIFTEEN.getValue())) {
-            this.userService.setDailyLimit(callbackChatId, (byte) 15);
-            telegramUtils.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
+            userService.setDailyLimit(callbackChatId, (byte) 15);
+            telegramUtil.sendDeleteMessageRequest(callbackChatId, callbackMessageId);
         }
     }
 
@@ -57,6 +57,6 @@ public class DailyLimitCallbackHandler implements CallbackHandler {
     }
 
     private final UserService userService;
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
 }
 

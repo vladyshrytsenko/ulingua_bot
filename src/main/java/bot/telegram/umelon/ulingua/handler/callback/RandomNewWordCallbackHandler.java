@@ -17,7 +17,7 @@ import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.UserService;
 import bot.telegram.umelon.ulingua.service.UserWordService;
 import bot.telegram.umelon.ulingua.service.WordService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -38,21 +38,21 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
     public void handle(CallbackQuery callbackQuery, LocalMessages localMessages) {
         MaybeInaccessibleMessage message = callbackQuery.getMessage();
 
-        UserDto currentUser = this.userService.getById(message.getChatId());
-        LanguageDto byCountryCode = this.languageService.getByCountryCode(currentUser.currentLang());
+        UserDto currentUser = userService.getById(message.getChatId());
+        LanguageDto byCountryCode = languageService.getByCountryCode(currentUser.currentLang());
 
         if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD.getValue())) {
             byte dailyLimit = currentUser.dailyLimit();
 
-            if (this.userWordService.isDailyLimitExceeded(currentUser.id(), dailyLimit)) {
-                this.telegramUtils.sendMessage(currentUser.id(), "Daily limit exceeded!", false);
+            if (userWordService.isDailyLimitExceeded(currentUser.id(), dailyLimit)) {
+                telegramUtil.sendMessage(currentUser.id(), "Daily limit exceeded!", false);
             } else {
                 this.prepareWordHistory(currentUser);
 
-                GeneratedWordHistoryDto wordFirst = this.generatedWordHistoryService.findFirstByCountryCode(currentUser.currentLang());
+                GeneratedWordHistoryDto wordFirst = generatedWordHistoryService.findFirstByCountryCode(currentUser.currentLang());
 
-                List<ButtonData> buttons = getButtonDataList(wordFirst.original());
-                this.telegramUtils.sendEditMessageTextWithInlineKeyboard(
+                List<ButtonData> buttons = this.getButtonDataList(wordFirst.original());
+                telegramUtil.sendEditMessageTextWithInlineKeyboard(
                     message.getChatId(),
                     message.getMessageId(),
                     wordFirst.original(),
@@ -62,39 +62,39 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
 
         } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_ALREADY_KNOWN.getValue())) {
             String wordStr = RANDOM_NEW_WORD_ALREADY_KNOWN.getDescription();
-            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_ALREADY_KNOWN.getDescription());
+            WordDto wordByOriginal = wordService.getByOriginal(RANDOM_NEW_WORD_ALREADY_KNOWN.getDescription());
 
             if (wordByOriginal == null) {
                 WordDto wordRequest = WordDto.builder()
                     .original(wordStr)
                     .language(byCountryCode)
                     .build();
-                wordByOriginal = this.wordService.create(wordRequest);
+                wordByOriginal = wordService.create(wordRequest);
             }
-            this.userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.KNOWN);
+            userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.KNOWN);
 
-            this.generatedWordHistoryService.deleteByOriginal(wordStr);
+            generatedWordHistoryService.deleteByOriginal(wordStr);
             this.prepareWordHistory(currentUser);
 
-            this.telegramUtils.sendDeleteMessageRequest(message.getChatId(), message.getMessageId());
+            telegramUtil.sendDeleteMessageRequest(message.getChatId(), message.getMessageId());
 
             callbackQuery.setData(RANDOM_NEW_WORD.getValue());
             this.handle(callbackQuery, localMessages);
 
         } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_TO_LEARN.getValue())) {
             String wordStr = RANDOM_NEW_WORD_TO_LEARN.getDescription();
-            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_TO_LEARN.getDescription());
+            WordDto wordByOriginal = wordService.getByOriginal(RANDOM_NEW_WORD_TO_LEARN.getDescription());
 
             if (wordByOriginal == null) {
                 WordDto wordRequest = WordDto.builder()
                     .original(wordStr)
                     .language(byCountryCode)
                     .build();
-                wordByOriginal = this.wordService.create(wordRequest);
+                wordByOriginal = wordService.create(wordRequest);
             }
-            this.userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.LEARNING);
+            userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.LEARNING);
 
-            this.generatedWordHistoryService.deleteByOriginal(wordStr);
+            generatedWordHistoryService.deleteByOriginal(wordStr);
             this.prepareWordHistory(currentUser);
 
             callbackQuery.setData(RANDOM_NEW_WORD.getValue());
@@ -102,18 +102,18 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
 
         } else if (callbackQuery.getData().endsWith(RANDOM_NEW_WORD_NOT_INTERESTING.getValue())) {
             String wordStr = RANDOM_NEW_WORD_NOT_INTERESTING.getDescription();
-            WordDto wordByOriginal = this.wordService.getByOriginal(RANDOM_NEW_WORD_NOT_INTERESTING.getDescription());
+            WordDto wordByOriginal = wordService.getByOriginal(RANDOM_NEW_WORD_NOT_INTERESTING.getDescription());
 
             if (wordByOriginal == null) {
                 WordDto wordRequest = WordDto.builder()
                     .original(wordStr)
                     .language(byCountryCode)
                     .build();
-                wordByOriginal = this.wordService.create(wordRequest);
+                wordByOriginal = wordService.create(wordRequest);
             }
-            this.userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.NOT_INTERESTING);
+            userWordService.addWordForUser(message.getChatId(), wordByOriginal.id(), UserWordProgress.NOT_INTERESTING);
 
-            this.generatedWordHistoryService.deleteByOriginal(wordStr);
+            generatedWordHistoryService.deleteByOriginal(wordStr);
             this.prepareWordHistory(currentUser);
 
             callbackQuery.setData(RANDOM_NEW_WORD.getValue());
@@ -122,7 +122,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
     }
 
     private void prepareWordHistory(UserDto currentUser) {
-        List<GeneratedWordHistoryDto> generatedWords = this.generatedWordHistoryService.findAllByCountryCode(currentUser.currentLang());
+        List<GeneratedWordHistoryDto> generatedWords = generatedWordHistoryService.findAllByCountryCode(currentUser.currentLang());
         if (generatedWords.isEmpty()) {
             List<String> userWords = userWordService.findAll(currentUser.id()).stream()
                 .map(uw -> {
@@ -168,7 +168,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
                 this.prepareWordHistory(currentUser);
             }
 
-            this.generatedWordHistoryService.saveAll(entities);
+            generatedWordHistoryService.saveAll(entities);
         }
     }
 
@@ -190,7 +190,7 @@ public class RandomNewWordCallbackHandler implements CallbackHandler {
     }
 
     private final UserService userService;
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
     private final GenerativeAiService generativeAiService;
     private final UserWordService userWordService;
     private final WordService wordService;

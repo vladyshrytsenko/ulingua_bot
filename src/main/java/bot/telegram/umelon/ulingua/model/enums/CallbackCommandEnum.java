@@ -18,7 +18,9 @@ public enum CallbackCommandEnum {
     RANDOM_NEW_WORD("_random_new_word"),
     RANDOM_NEW_WORD_ALREADY_KNOWN("_random_new_word_already_known"),
     RANDOM_NEW_WORD_TO_LEARN("_random_new_word_to_learn"),
-    RANDOM_NEW_WORD_NOT_INTERESTING("_random_new_word_not_interesting");
+    RANDOM_NEW_WORD_NOT_INTERESTING("_random_new_word_not_interesting"),
+    LANGUAGE_PROFICIENCY_TEST("language_proficiency_test"),
+    LANGUAGE_PROFICIENCY_TEST_NEXT_QUESTION("_language_proficiency_test_next_question");
 
     private final String value;
     private String customDescription;

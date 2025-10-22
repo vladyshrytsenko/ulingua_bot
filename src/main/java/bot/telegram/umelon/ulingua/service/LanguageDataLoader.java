@@ -10,7 +10,7 @@ public class LanguageDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        this.languageService.initializeLanguages();
+        languageService.initializeLanguages();
     }
 
     private final LanguageService languageService;

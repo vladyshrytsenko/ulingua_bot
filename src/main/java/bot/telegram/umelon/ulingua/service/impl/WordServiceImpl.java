@@ -15,13 +15,13 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public WordDto getById(long id) {
-        Word word = this.wordRepository.findById(id).orElse(null);
+        Word word = wordRepository.findById(id).orElse(null);
         return word != null ? WordMapper.MAPPER.toDto(word) : null;
     }
 
     @Override
     public WordDto getByOriginal(String original) {
-        Word word = this.wordRepository.findByOriginalIgnoreCase(original).orElse(null);
+        Word word = wordRepository.findByOriginalIgnoreCase(original).orElse(null);
         return word != null ? WordMapper.MAPPER.toDto(word) : null;
     }
 
@@ -29,7 +29,7 @@ public class WordServiceImpl implements WordService {
     @Transactional
     public WordDto create(WordDto requestDto) {
         Word entity = WordMapper.MAPPER.toEntity(requestDto);
-        Word savedWord = this.wordRepository.save(entity);
+        Word savedWord = wordRepository.save(entity);
 
         return WordMapper.MAPPER.toDto(savedWord);
     }

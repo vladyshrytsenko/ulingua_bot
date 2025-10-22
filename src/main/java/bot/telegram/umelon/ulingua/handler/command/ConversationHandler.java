@@ -7,7 +7,7 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.UserState;
 import bot.telegram.umelon.ulingua.service.LanguageService;
 import bot.telegram.umelon.ulingua.service.UserService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -25,18 +25,18 @@ public class ConversationHandler implements CommandHandler {
 
         if (currentUserDto == null) {
             message = localMessages.get("message.register_required");
-            telegramUtils.sendMessage(userId, message, false);
+            telegramUtil.sendMessage(userId, message, false);
         } else {
             LanguageDto languageDto = languageService.getByCountryCode(currentUserDto.currentLang());
             message = localMessages.get("message.conversation.topic").formatted(languageDto.unicode());
             userService.setUserState(userId, UserState.AWAITING_CONVERSATION);
 
-            telegramUtils.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
-            telegramUtils.sendMessage(userId, message, true);
+            telegramUtil.sendDeleteMessageRequest(userId, update.getMessage().getMessageId());
+            telegramUtil.sendMessage(userId, message, true);
         }
     }
 
     private final UserService userService;
     private final LanguageService languageService;
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
 }

@@ -19,7 +19,7 @@ public class UserWordServiceImpl implements UserWordService {
 
     @Override
     public void addWordForUser(long userId, long wordId, UserWordProgress progress) {
-        Optional<UserWord> userWordOptional = this.userWordRepository.findByUserIdAndWordId(userId, wordId);
+        Optional<UserWord> userWordOptional = userWordRepository.findByUserIdAndWordId(userId, wordId);
 
         if (userWordOptional.isEmpty()) {
             UserWord userWord = UserWord.builder()
@@ -28,13 +28,13 @@ public class UserWordServiceImpl implements UserWordService {
                 .progress(progress)
                 .createdAt(LocalDateTime.now())
                 .build();
-            this.userWordRepository.save(userWord);
+            userWordRepository.save(userWord);
         }
     }
 
     @Override
     public List<UserWord> findAll(long userId) {
-        return this.userWordRepository.findByUserId(userId);
+        return userWordRepository.findByUserId(userId);
     }
 
     @Override

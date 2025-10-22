@@ -7,7 +7,7 @@ import bot.telegram.umelon.ulingua.model.dto.UserDto;
 import bot.telegram.umelon.ulingua.model.enums.AiProvider;
 import bot.telegram.umelon.ulingua.service.GenerativeAiService;
 import bot.telegram.umelon.ulingua.service.LocalizationService;
-import bot.telegram.umelon.ulingua.utils.TelegramUtils;
+import bot.telegram.umelon.ulingua.util.TelegramUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class AwaitingLanguageByCountryHandler implements StateHandler {
 
     @Override
     public void handle(long userId, String messageText, UserDto currentUser, LocalMessages localMessages) {
-        LocalizationDto localizationDto = this.localizationService.getByChatId(userId);
+        LocalizationDto localizationDto = localizationService.getByChatId(userId);
 
         String chatCompletion = generativeAiService.chatCompletion(
             AiProvider.GEMINI,
@@ -25,10 +25,10 @@ public class AwaitingLanguageByCountryHandler implements StateHandler {
             "Or if there are several, then answer separated by commas. Or if such a country does not exist, then say so"
         );
 
-        telegramUtils.sendMessage(userId, chatCompletion, false);
+        telegramUtil.sendMessage(userId, chatCompletion, false);
     }
 
-    private final TelegramUtils telegramUtils;
+    private final TelegramUtil telegramUtil;
     private final GenerativeAiService generativeAiService;
     private final LocalizationService localizationService;
 }
